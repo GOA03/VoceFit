@@ -1,1 +1,51 @@
-<p>workout-form works!</p>
+<div class="modal-overlay" [class.open]="isOpen" (click)="onOverlayClick($event)">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2 class="modal-title">
+        {{ isEditing ? 'Editar Treino' : 'Novo Treino' }}
+      </h2>
+    </div>
+
+    <form (ngSubmit)="handleSubmit()" class="form-content" #workoutForm="ngForm">
+      <div class="form-group">
+        <label for="title" class="form-label">
+          Nome do Treino
+        </label>
+        <input
+          id="title"
+          type="text"
+          [(ngModel)]="formData.title"
+          name="title"
+          placeholder="Ex: Treino A - Peito e Tríceps"
+          class="form-input"
+          required
+          #titleInput="ngModel"
+        />
+        <div class="error-message" *ngIf="titleInput.invalid && titleInput.touched">
+          Nome do treino é obrigatório
+        </div>
+      </div>
+
+
+
+      <div class="form-actions">
+        <button
+          type="button"
+          class="btn btn-outline"
+          (click)="onClose.emit()"
+        >
+          <lucide-icon [img]="XIcon" class="btn-icon"></lucide-icon>
+          Cancelar
+        </button>
+        <button
+          type="submit"
+          class="btn btn-primary"
+          [disabled]="!workoutForm.valid || !formData.title.trim()"
+        >
+          <lucide-icon [img]="SaveIcon" class="btn-icon"></lucide-icon>
+          {{ isEditing ? 'Salvar' : 'Adicionar' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

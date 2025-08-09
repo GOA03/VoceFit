@@ -5,7 +5,11 @@
     <h2 class="index-title">Meus Treinos</h2>
     <p class="index-subtitle">Selecione um treino para ver os exercícios</p>
 
-    <app-workout-list></app-workout-list>
+    <app-workout-list
+      (editWorkout)="openWorkoutForm('edit', $event)"
+      (deleteWorkout)="deleteWorkout($event)"
+      (duplicateWorkout)="duplicateWorkout($event)"
+    ></app-workout-list>
   </section>
 
   <section class="index-section">
@@ -20,3 +24,11 @@
   (buttonClick)="onAddWorkout()"
   ariaLabel="Adicionar novo treino">
 </app-floating-add-button>
+
+<app-workout-form
+  [isOpen]="formState.isOpen"
+  [initialData]="formState.workout"
+  [isEditing]="formState.mode === 'edit'"
+  (onClose)="closeWorkoutForm()"
+  (onSave)="saveWorkout($event)"
+></app-workout-form>

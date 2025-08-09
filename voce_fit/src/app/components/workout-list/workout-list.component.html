@@ -10,7 +10,12 @@
 
   <ul *ngIf="!loading && !error">
     <li *ngFor="let workout of workouts" class="workout-item">
-      <app-workout-card [workout]="workout"></app-workout-card>
+      <app-workout-card 
+        [workout]="workout"
+        (edit)="onEditWorkout($event)"
+        (delete)="onDeleteWorkout($event)"
+        (duplicate)="onDuplicateWorkout($event)"
+      ></app-workout-card>
     </li>
   </ul>
 

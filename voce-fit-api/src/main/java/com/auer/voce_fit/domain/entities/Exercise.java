@@ -8,7 +8,10 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "exercises")
+@Table(name = "exercises",
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = {"workout_id", "sequence"})
+        })
 @Getter
 @Setter
 @NoArgsConstructor
@@ -42,4 +45,7 @@ public class Exercise {
     @Column(name = "created_at", nullable = false, updatable = false)
     @org.hibernate.annotations.CreationTimestamp
     private LocalDateTime createdAt;
+
+    @Column(nullable = false)
+    private Integer sequence;
 }

@@ -10,5 +10,6 @@ public record ExerciseResponseDTO(
         String weight,
         Integer restTime,
         String notes,
-        UUID workoutId
+        UUID workoutId,
+        Integer sequence
 ) {}

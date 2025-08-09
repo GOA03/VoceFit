@@ -7,6 +7,6 @@ import java.util.List;
 import java.util.UUID;
 
 public interface JpaExerciseRepository extends JpaRepository<Exercise, UUID> {
-
     List<Exercise> findByWorkoutId(UUID workoutId);
+    boolean existsByWorkoutIdAndSequence(UUID workoutId, Integer sequence);
 }

@@ -36,5 +36,6 @@ public class Workout {
 
     @OneToMany(mappedBy = "workout", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
+    @OrderBy("sequence ASC")
     private List<Exercise> exercises;
 }

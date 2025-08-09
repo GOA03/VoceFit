@@ -25,7 +25,8 @@ public class ExerciseService {
                         exercise.getWeight(),
                         exercise.getRestTime(),
                         exercise.getNotes(),
-                        exercise.getWorkout().getId()
+                        exercise.getWorkout().getId(),
+                        exercise.getSequence()
                 ))
                 .toList();
     }
@@ -40,7 +41,8 @@ public class ExerciseService {
                         exercise.getWeight(),
                         exercise.getRestTime(),
                         exercise.getNotes(),
-                        exercise.getWorkout().getId()
+                        exercise.getWorkout().getId(),
+                        exercise.getSequence()
                 ))
                 .toList();
     }

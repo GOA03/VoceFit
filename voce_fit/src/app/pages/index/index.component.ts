@@ -111,9 +111,8 @@ export class IndexComponent {
   }
 
   duplicateWorkout(workout: Workout): void {
-    // Removemos o id temporário antes de enviar para o serviço
-    const { id, ...workoutWithoutId } = workout;
-    this.workoutService.createWorkout(workoutWithoutId).subscribe({
+    // Agora usamos o endpoint específico para duplicação
+    this.workoutService.duplicateWorkout(workout.id).subscribe({
       next: (newWorkout) => {
         console.log('Treino duplicado com sucesso:', newWorkout);
         // Recarregar a lista de treinos

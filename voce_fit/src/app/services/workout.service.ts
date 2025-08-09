@@ -43,4 +43,8 @@ export class WorkoutService {
   deleteWorkout(id: string): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
+
+  duplicateWorkout(id: string): Observable<Workout> {
+    return this.http.post<Workout>(`${this.apiUrl}/${id}/duplicate`, {}, this.httpOptions);
+  }
 }

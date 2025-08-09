@@ -3,6 +3,7 @@ package com.auer.voce_fit.infrastructure.controller;
 import com.auer.voce_fit.application.services.WorkoutService;
 import com.auer.voce_fit.domain.dtos.ExerciseByWorkoutResponseDTO;
 import com.auer.voce_fit.domain.dtos.ReorderRequestDTO;
+import com.auer.voce_fit.domain.dtos.WorkoutRequestDTO;
 import com.auer.voce_fit.domain.dtos.WorkoutResponseDTO;
 import com.auer.voce_fit.domain.exceptions.InvalidExerciseOrderException;
 import com.auer.voce_fit.domain.exceptions.WorkoutNotFoundException;
@@ -22,6 +23,16 @@ public class WorkoutController {
 
     public WorkoutController(WorkoutService workoutService) {
         this.workoutService = workoutService;
+    }
+
+    @PostMapping
+    public ResponseEntity<WorkoutResponseDTO> createWorkout (@RequestBody WorkoutRequestDTO request) {
+        try {
+            WorkoutResponseDTO workout = workoutService.createWorkout(request.title());
+            return ResponseEntity.status(201).body(workout);
+        } catch (RuntimeException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @GetMapping

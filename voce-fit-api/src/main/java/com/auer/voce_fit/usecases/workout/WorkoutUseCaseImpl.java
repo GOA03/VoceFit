@@ -72,7 +72,7 @@ public class WorkoutUseCaseImpl implements WorkoutUseCase {
     public Workout reorderExercises(UUID workoutId, List<ReorderRequestDTO> reorderRequests) {
 
         // 1. Validar se workout existe
-        Workout workout = workoutRepository.findById(workoutId)
+        workoutRepository.findById(workoutId)
                 .orElseThrow(() -> new WorkoutNotFoundException("Workout não encontrado: " + workoutId));
 
         // 2. Validar se todos os exercícios pertencem ao workout
@@ -111,7 +111,7 @@ public class WorkoutUseCaseImpl implements WorkoutUseCase {
         }
 
         Integer currentSequence = exercise.getSequence();
-        Integer newSequence;
+        int newSequence;
 
         if ("up".equals(direction)) {
             newSequence = Math.max(1, currentSequence - 1);

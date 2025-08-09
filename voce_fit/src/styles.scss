@@ -1,0 +1,33 @@
+/* You can add global styles to this file, and also import other style files */
+/* -------------------------------------------
+   Variáveis globais de cores
+-------------------------------------------- */
+$background-color: #141719;          // fundo preto sólido
+$primary-red: #e53935;               // vermelho vibrante para ícones e bordas
+$text-white: #ffffff;                // branco para títulos e nomes
+$text-muted: #b0b0b0;                // cinza claro para subtítulo
+$avatar-bg: #121212;                 // círculo avatar mais escuro que fundo
+$avatar-border: $primary-red;        // borda fina vermelha do avatar
+
+/* -------------------------------------------
+   Reset global e estilos base
+-------------------------------------------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+app-root,
+.mat-app-background {
+  margin: 0 !important;
+  padding: 0 !important;
+  background-color: $background-color;
+  width: 100vw;
+  height: 100vh;
+  overflow-x: hidden;
+  color: $text-white;
+  font-family: system-ui, sans-serif;
+}

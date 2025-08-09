@@ -1,0 +1,62 @@
+<app-gym-header></app-gym-header>
+
+<!-- Estado de loading -->
+<div *ngIf="loading" class="loading-state">
+  <div class="spinner"></div>
+  <p>Carregando treino...</p>
+</div>
+
+<!-- Estado de erro -->
+<div *ngIf="error && !loading" class="error-state">
+  <div class="icon-error">❌</div>
+  <h3>Erro ao carregar treino</h3>
+  <p>{{ error }}</p>
+  <button class="retry-button" (click)="loadWorkout()">Tentar novamente</button>
+</div>
+
+<!-- Conteúdo principal -->
+<div *ngIf="!loading && !error && workout" class="container">
+  <div class="header">
+    <button class="icon-button" (click)="goBack()" aria-label="Voltar">
+      <lucide-icon name="arrow-left" size="25" class="icon"></lucide-icon>
+    </button>
+    <div>
+      <h2 class="title">{{ workout.title }}</h2>
+      <p class="subtitle">{{ exercises.length }} exercício{{ exercises.length === 1 ? '' : 's' }}</p>
+    </div>
+  </div>
+
+  <div *ngIf="exercises.length > 0" class="content">
+    <app-exercise-stats [exercises]="exercises"></app-exercise-stats>
+    <div class="exercises-list">
+      <app-exercise-card
+        *ngFor="let exercise of exercises"
+        [exercise]="exercise"
+        (click)="onSelectExercise(exercise.id)"
+        (edit)="onEditExercise($event)"
+        (delete)="onDeleteExercise($event)"
+        (duplicate)="onDuplicateExercise($event)"
+      ></app-exercise-card>
+    </div>
+  </div>
+
+  <div *ngIf="exercises.length === 0" class="empty-state">
+    <div class="icon-empty">🏋️</div>
+    <h3>Nenhum exercício adicionado</h3>
+    <p>Comece adicionando exercícios a este treino.</p>
+  </div>
+</div>
+
+<app-exercise-form
+  [isOpen]="formState.isOpen"
+  [initialData]="formState.exercise"
+  [isEditing]="formState.mode === 'edit'"
+  (onClose)="closeExerciseForm()"
+  (onSave)="saveExercise($event)"
+></app-exercise-form>
+
+<app-floating-add-button
+  *ngIf="!loading && !error"
+  (buttonClick)="onAddExercise()"
+  ariaLabel="Adicionar novo exercício">
+</app-floating-add-button>

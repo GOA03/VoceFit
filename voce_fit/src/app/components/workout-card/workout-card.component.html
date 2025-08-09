@@ -1,0 +1,48 @@
+<div class="workout-card" [ngClass]="cardClass" (click)="onCardClickWrapper($event)">
+  <!-- Accent bar -->
+  <div class="accent-bar"></div>
+
+  <div class="card-content">
+    <div class="card-header">
+      <div class="workout-icon">
+        <lucide-icon name="dumbbell" size="20"></lucide-icon>
+      </div>
+
+      <div class="menu-container" [class.menu-open]="dropdownOpen" (keydown)="onKeydown($event)">
+        <button class="menu-btn" [class.active]="dropdownOpen" (click)="toggleDropdown($event)" aria-label="Menu"
+          type="button">
+          <lucide-icon name="ellipsis-vertical" size="19" class="icon"></lucide-icon>
+        </button>
+
+        <div class="dropdown-menu" [class.show]="dropdownOpen" (click)="$event.stopPropagation()">
+          <button class="menu-item edit-item" (click)="onEdit($event)" type="button">
+            <lucide-icon name="pencil" class="menu-icon" size="16"></lucide-icon>
+            Editar
+          </button>
+          <button class="menu-item" (click)="onDuplicate($event)" type="button">
+            <lucide-icon name="copy" class="menu-icon" size="16"></lucide-icon>
+            Duplicar
+          </button>
+          <button class="menu-item delete-item" (click)="onDelete($event)" type="button">
+            <lucide-icon name="trash" class="menu-icon" size="16"></lucide-icon>
+            Excluir
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="workout-info">
+      <h3 class="workout-title">{{ workout?.title || 'Treino sem título' }}</h3>
+      <p class="workout-date">{{ workout?.createdAt | date:'dd/MM/yyyy' }}</p>
+    </div>
+
+    <div class="workout-stats">
+      <div class="stat-item">
+        <span class="stat-number">{{ workout?.amount || 0 }}</span>
+        <span class="stat-label">{{ workout?.amount === 1 ? 'exercício' : 'exercícios' }}</span>
+      </div>
+
+      <div class="color-dot"></div>
+    </div>
+  </div>
+</div>

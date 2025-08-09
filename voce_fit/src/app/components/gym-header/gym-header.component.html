@@ -1,0 +1,28 @@
+<header class="header">
+  <div class="header-container">
+    <!-- Logo -->
+    <div class="header-logo">
+      <div class="header-logo-bg">
+         <lucide-icon name="dumbbell" size="32" class="header-logo" alt="Dumbbell Icon"></lucide-icon>
+      </div>
+      <div>
+        <h1 class="header-title">VocêFit</h1>
+        <p class="header-subtitle">Seus treinos</p>
+      </div>
+    </div>
+
+    <!-- Usuário -->
+    <div class="header-user">
+      <div class="header-avatar">
+        <div class="header-avatar-circle">
+          {{ firstLetter }}
+        </div>
+        <span class="header-name">{{ userName }}</span>
+      </div>
+
+      <button class="header-logout" (click)="onLogout()">
+        <lucide-icon name="log-out" size="16" class="icon-logout"></lucide-icon>
+      </button>
+    </div>
+  </div>
+</header>

@@ -1,0 +1,134 @@
+<div class="modal-overlay" [class.open]="isOpen" (click)="onOverlayClick($event)">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2 class="modal-title">
+        {{ isEditing ? 'Editar Exercício' : 'Novo Exercício' }}
+      </h2>
+    </div>
+
+    <form (ngSubmit)="handleSubmit()" class="form-content" #exerciseForm="ngForm">
+      <div class="form-group">
+        <label for="name" class="form-label">
+          Nome do Exercício
+        </label>
+        <input
+          id="name"
+          type="text"
+          [(ngModel)]="formData.name"
+          name="name"
+          placeholder="Ex: Supino reto"
+          class="form-input"
+          required
+          #nameInput="ngModel"
+        />
+        <div class="error-message" *ngIf="nameInput.invalid && nameInput.touched">
+          Nome do exercício é obrigatório
+        </div>
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="sets" class="form-label">
+            Séries
+          </label>
+          <input
+            id="sets"
+            type="text"
+            min="1"
+            max="20"
+            [(ngModel)]="formData.sets"
+            name="sets"
+            class="form-input text-center"
+            required
+            #setsInput="ngModel"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="reps" class="form-label">
+            Reps
+          </label>
+          <input
+            id="reps"
+            type="text"
+            min="1"
+            max="100"
+            [(ngModel)]="formData.reps"
+            name="reps"
+            class="form-input text-center"
+            required
+            #repsInput="ngModel"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="weight" class="form-label">
+            Peso (kg)
+          </label>
+          <input
+            id="weight"
+            type="text"
+            min="0"
+            step="0.5"
+            [(ngModel)]="formData.weight"
+            name="weight"
+            class="form-input text-center"
+            required
+            #weightInput="ngModel"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="restTime" class="form-label">
+            Descanso (seg)
+          </label>
+          <input
+            id="restTime"
+            type="number"
+            min="0"
+            max="600"
+            step="5"
+            [(ngModel)]="formData.restTime"
+            name="restTime"
+            class="form-input text-center"
+            required
+            #restTimeInput="ngModel"
+          />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="notes" class="form-label">
+          Observações (opcional)
+        </label>
+        <textarea
+          id="notes"
+          [(ngModel)]="formData.notes"
+          name="notes"
+          placeholder="Ex: Foco na fase excêntrica, descanso 90s..."
+          class="form-textarea"
+          rows="3"
+        ></textarea>
+      </div>
+
+      <div class="form-actions">
+        <button
+          type="button"
+          class="btn btn-outline"
+          (click)="onClose.emit()"
+        >
+          <lucide-icon [img]="XIcon" class="btn-icon"></lucide-icon>
+          Cancelar
+        </button>
+        <button
+          type="submit"
+          class="btn btn-primary"
+          [disabled]="!exerciseForm.valid || !formData.name.trim()"
+        >
+          <lucide-icon [img]="SaveIcon" class="btn-icon"></lucide-icon>
+          {{ isEditing ? 'Salvar' : 'Adicionar' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

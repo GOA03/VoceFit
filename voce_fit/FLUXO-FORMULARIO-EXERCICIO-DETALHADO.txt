@@ -1,0 +1,239 @@
+================================================================================
+FLUXO COMPLETO DO FORMULÁRIO DE EXERCÍCIOS
+================================================================================
+
+Este documento explica em detalhes o funcionamento do fluxo de criação, edição, duplicação e exclusão de exercícios no sistema VoceFit.
+
+================================================================================
+1. VISÃO GERAL DA ARQUITETURA
+================================================================================
+
+O sistema utiliza Angular com componentes standalone e segue uma arquitetura de:
+- Components: Reponsáveis pela UI
+- Services: Gerenciam comunicação com API
+- Models: Definem estruturas de dados
+- Páginas: Orquestram componentes
+
+================================================================================
+2. COMPONENTES ENVOLVIDOS
+================================================================================
+
+2.1 ExerciseFormComponent (src/app/components/exercise-form/)
+    ├─ Responsável pelo modal de formulário
+    ├─ Lida com criação e edição
+    └─ Interface ExerciseFormData define estrutura dos dados
+
+2.2 ExerciseCardComponent (src/app/components/exercise-card/)
+    ├─ Exibe exercício individual
+    ├─ Provê ações: editar, duplicar, excluir
+    └─ Emite eventos para ações do usuário
+
+2.3 WorkoutDetailComponent (src/app/pages/workout-detail/)
+    ├─ Página principal que orquestra tudo
+    ├─ Gerencia estado do formulário
+    └─ Coordena operações CRUD
+
+2.4 ExerciseService (src/app/services/exercise.service/)
+    └─ Comunicação com backend (baseUrl: http://localhost:8081/api/exercises)
+
+================================================================================
+3. FLUXO DE CRIAÇÃO DE EXERCÍCIO
+================================================================================
+
+PASSO 1: Usuário clica no botão flutuante "+"
+    - WorkoutDetailComponent.onAddExercise() é chamado
+    - Abre formulário em modo 'create'
+
+PASSO 2: Formulário é renderizado
+    - ExerciseFormComponent recebe:
+        isOpen = true
+        isEditing = false
+        initialData = undefined
+    - Campos são resetados para valores padrão:
+        sets: '3'
+        reps: '10'
+        weight: '0'
+        restTime: 60
+
+PASSO 3: Usuário preenche dados
+    - Validação em tempo real:
+        - Nome: obrigatório
+        - Números: mínimos e máximos definidos
+    - Botão fica desabilitado até formulário ser válido
+
+PASSO 4: Submissão do formulário
+    - ExerciseFormComponent.handleSubmit()
+    - Emite evento onSave com ExerciseFormData
+    - WorkoutDetailComponent.saveExercise() recebe dados
+
+PASSO 5: Criação no backend
+    - ExerciseService.createExercise() é chamado
+    - POST para /api/exercises
+    - Dados incluem workoutId do contexto
+    - Em caso de sucesso: reload do workout
+    - Em caso de erro: alert ao usuário
+
+================================================================================
+4. FLUXO DE EDIÇÃO DE EXERCÍCIO
+================================================================================
+
+PASSO 1: Usuário clica em "Editar" no card
+    - ExerciseCardComponent.onEdit() emite evento 'edit'
+    - WorkoutDetailComponent.onEditExercise() recebe exercício
+
+PASSO 2: Preparação para edição
+    - WorkoutDetailComponent.openExerciseForm('edit', exercise) ======= OK
+
+
+
+
+    - ExerciseFormComponent recebe:
+        isOpen = true
+        isEditing = true
+        initialData = exercício completo
+
+PASSO 3: Preenchimento automático
+    - ExerciseFormComponent.ngOnChanges detecta initialData
+    - ExerciseFormComponent.resetForm() preenche campos
+    - Título muda para "Editar Exercício"
+
+PASSO 4: Usuário edita dados
+    - Mesma validação que criação
+    - Valores originais já preenchidos
+
+PASSO 5: Submissão da edição
+    - WorkoutDetailComponent.saveExercise()
+    - Detecta modo 'edit' pelo formState.mode
+    - ExerciseService.updateExercise(id, data)
+    - PUT para /api/exercises/:id
+    - Reload do workout após sucesso
+
+================================================================================
+5. FLUXO DE DUPLICAÇÃO DE EXERCÍCIO
+================================================================================
+
+PASSO 1: Usuário clica em "Duplicar" no card
+    - ExerciseCardComponent.onDuplicate() emite evento 'duplicate'
+    - WorkoutDetailComponent.onDuplicateExercise() recebe exercício
+
+PASSO 2: Processo de duplicação
+    - Cria novo objeto com dados do exercício original
+    - Remove ID para forçar criação de novo
+    - Mantém todos os campos iguais (nome, sets, reps, etc.)
+
+PASSO 3: Criação do duplicado
+    - Mesmo fluxo que criação
+    - ExerciseService.createExercise() com dados duplicados
+    - Novo exercício é criado com novo ID
+    - Usuário pode editar após criação
+
+================================================================================
+6. FLUXO DE EXCLUSÃO DE EXERCÍCIO
+================================================================================
+
+PASSO 1: Usuário clica em "Excluir" no card
+    - ExerciseCardComponent.onDelete() emite evento 'delete'
+    - WorkoutDetailComponent.onDeleteExercise() recebe ID
+
+PASSO 2: Confirmação (implementação futura)
+    - Atualmente: console.log apenas
+    - Deve ser implementado:
+        - Modal de confirmação
+        - Verificação antes de excluir
+
+PASSO 3: Exclusão no backend
+    - ExerciseService.deleteExercise(id)
+    - DELETE para /api/exercises/:id
+    - Reload do workout após exclusão
+
+================================================================================
+7. ESTRUTURA DE DADOS
+================================================================================
+
+Interface Exercise:
+{
+  id: string (gerado pelo backend)
+  name: string
+  sets: string
+  reps: string
+  weight: string
+  restTime: number (em segundos)
+  notes?: string (opcional)
+  workoutId: string (contexto do treino)
+  completed?: boolean (status de conclusão)
+}
+
+Interface ExerciseFormData (para formulário):
+{
+  name: string
+  sets: string
+  reps: string
+  weight: string
+  restTime: number
+  notes: string
+}
+
+================================================================================
+8. ESTADOS DO FORMULÁRIO
+================================================================================
+
+WorkoutDetailComponent.formState:
+{
+  isOpen: boolean (controle de visibilidade)
+  mode: 'create' | 'edit' (modo de operação)
+  exercise: Exercise | undefined (dados para edição)
+}
+
+================================================================================
+9. COMUNICAÇÃO ENTRE COMPONENTES
+================================================================================
+
+EventEmitter Pattern:
+    ExerciseCard → WorkoutDetail (edit/delete/duplicate)
+    ExerciseForm → WorkoutDetail (onSave/onClose)
+    WorkoutDetail → ExerciseForm (@Input properties)
+
+================================================================================
+10. TRATAMENTO DE ERROS
+================================================================================
+
+- Todos os services retornam Observables
+- WorkoutDetail captura erros com callbacks error:
+    - console.error para debugging
+    - alert() para usuário
+    - loading states para UX
+
+================================================================================
+11. VALIDAÇÕES
+================================================================================
+
+Formulário:
+- Nome: obrigatório, trim()
+- Sets: número entre 1-20
+- Reps: número entre 1-100
+- Weight: número >= 0
+- RestTime: número entre 0-600 segundos
+
+================================================================================
+12. PRÓXIMOS PASSOS PARA IMPLEMENTAÇÃO
+================================================================================
+
+1. Implementar modal de confirmação para exclusão
+2. Adicionar animações de transição
+3. Implementar undo/redo para operações
+4. Adicionar loading states individuais
+5. Implementar cache de dados
+6. Adicionar validações customizadas
+7. Implementar auto-save para formulários
+8. Adicionar preview antes de salvar
+
+================================================================================
+OBSERVAÇÕES TÉCNICAS
+================================================================================
+
+- Backend roda em localhost:8081
+- Frontend roda em localhost:4200 (Angular)
+- CORS deve estar configurado
+- IDs são gerados automaticamente pelo backend
+- Todos os campos são salvos como string no backend
+- O reload após cada operação garante consistência dos dados

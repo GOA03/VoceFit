@@ -1,0 +1,37 @@
+.workout-list {
+  padding: 0.3rem;
+
+  ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: 1rem;
+  }
+
+  .workout-item {
+    border-radius: 0.5rem;
+  }
+
+  .loading,
+  .error,
+  .empty {
+    text-align: center;
+    padding: 2rem;
+    color: #666;
+  }
+
+  .error button {
+    margin-top: 1rem;
+    padding: 0.5rem 1rem;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 0.25rem;
+    cursor: pointer;
+  }
+
+  .error button:hover {
+    background-color: #0056b3;
+  }
+}

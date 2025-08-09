@@ -1,0 +1,22 @@
+<app-gym-header></app-gym-header>
+
+<main class="index-main">
+  <section class="index-section">
+    <h2 class="index-title">Meus Treinos</h2>
+    <p class="index-subtitle">Selecione um treino para ver os exercícios</p>
+
+    <app-workout-list></app-workout-list>
+  </section>
+
+  <section class="index-section">
+    <h2 class="index-title">Estatísticas Gerais</h2>
+
+    <!-- Exemplo: placeholder de gráfico ou métricas -->
+    <div class="index-placeholder">Gráficos e métricas aqui</div>
+  </section>
+</main>
+
+<app-floating-add-button
+  (buttonClick)="onAddWorkout()"
+  ariaLabel="Adicionar novo treino">
+</app-floating-add-button>

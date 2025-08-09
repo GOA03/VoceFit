@@ -1,0 +1,20 @@
+<div class="workout-list">
+  <div *ngIf="loading" class="loading">
+    <p>Carregando treinos...</p>
+  </div>
+
+  <div *ngIf="error" class="error">
+    <p>{{ error }}</p>
+    <button (click)="loadWorkouts()">Tentar novamente</button>
+  </div>
+
+  <ul *ngIf="!loading && !error">
+    <li *ngFor="let workout of workouts" class="workout-item">
+      <app-workout-card [workout]="workout"></app-workout-card>
+    </li>
+  </ul>
+
+  <div *ngIf="!loading && !error && workouts.length === 0" class="empty">
+    <p>Nenhum treino encontrado.</p>
+  </div>
+</div>

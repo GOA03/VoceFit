@@ -1,0 +1,59 @@
+<div class="exercise-card" *ngIf="exercise" (click)="closeDropdown()" [class.completed]="isCompleted">
+  <div class="card-content">
+    <div class="card-header">
+      <div class="exercise-info">
+        <h3 class="exercise-name" [title]="exercise.name">{{ exercise.name }}</h3>
+        <p *ngIf="exercise.notes" class="exercise-notes" [title]="exercise.notes">{{ exercise.notes }}</p>
+      </div>
+
+      <div class="menu-container" [class.menu-open]="dropdownOpen">
+        <button class="menu-btn" [class.active]="dropdownOpen" (click)="toggleDropdown($event)" aria-label="Menu"
+          type="button">
+          <lucide-icon name="ellipsis-vertical" size="18" class="icon"></lucide-icon>
+        </button>
+
+        <div class="dropdown-menu" [class.show]="dropdownOpen" (click)="$event.stopPropagation()">
+          <button class="menu-item edit-item" (click)="onEdit()" type="button">
+            <lucide-icon name="pencil" class="menu-icon" size="16"></lucide-icon>
+            Editar
+          </button>
+          <button class="menu-item" (click)="onDuplicate()" type="button">
+            <lucide-icon name="copy" class="menu-icon" size="16"></lucide-icon>
+            Duplicar
+          </button>
+          <button class="menu-item delete-item" (click)="onDelete()" type="button">
+            <lucide-icon name="trash" class="menu-icon" size="16"></lucide-icon>
+            Excluir
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-label">Séries</div>
+        <div class="stat-value">{{ exercise.sets }}</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-label">Reps</div>
+        <div class="stat-value">{{ exercise.reps }}</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-label">Peso</div>
+        <div class="stat-value">{{ exercise.weight }}</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-label">Descanso</div>
+        <div class="stat-value">{{ exercise.restTime || '60s' }}s</div>
+      </div>
+    </div>
+
+    <button class="conclude-button" (click)="onConclude()" type="button" [disabled]="isCompleted">
+      <lucide-icon [name]="isCompleted ? 'refresh-cw' : 'check'" size="30" class="icon"></lucide-icon>
+      {{ isCompleted ? 'Refazer Exercício' : 'Concluir Exercício' }}
+    </button>
+  </div>
+</div>

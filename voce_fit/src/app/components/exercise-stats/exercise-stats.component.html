@@ -1,0 +1,18 @@
+<div class="stats-container" *ngIf="exercises.length > 0">
+  <div class="stat-card">
+    <lucide-icon name="target" class="icon-svg text-blue-400"></lucide-icon>
+    <div class="label">Exercícios</div>
+    <div class="value">{{ totalExercises }}</div>
+  </div>
+  <div class="stat-card-middle">
+    <lucide-icon name="clock" class="icon-svg text-green-400"></lucide-icon>
+    <div class="label">Tempo decorrido</div>
+    <div class="value">{{ totalTime }}</div>
+  </div>
+  <div class="stat-card">
+    <lucide-icon name="zap" class="icon-svg text-yellow-400"></lucide-icon>
+    <div class="label">Concluidos</div>
+    <div class="value">{{ totalExercises }}</div>
+  </div>
+</div>
+

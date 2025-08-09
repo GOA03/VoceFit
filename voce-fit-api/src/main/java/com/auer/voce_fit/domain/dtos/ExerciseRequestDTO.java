@@ -8,5 +8,6 @@ public record ExerciseRequestDTO (
         String sets,
         String reps,
         String weight,
-        String notes
+        String notes,
+        Integer sequence
 ) {}

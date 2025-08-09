@@ -7,5 +7,18 @@ import java.util.UUID;
 public interface ExerciseRepository {
 
     Exercise findByExerciseId(UUID exerciseId);
+
     List<Exercise> findByWorkoutId(UUID workoutId);
+
+    // NOVOS MÉTODOS para sequence
+    Integer findNextSequence(UUID workoutId);
+
+    boolean existsByWorkoutIdAndSequence(UUID workoutId, Integer sequence);
+
+    Exercise save(Exercise exercise);
+
+    void delete(Exercise exercise);
+
+    // OPCIONAL: Para reordenação em lote
+    void updateSequencesFrom(UUID workoutId, Integer fromSequence);
 }

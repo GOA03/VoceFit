@@ -1,5 +1,7 @@
 package com.auer.voce_fit.usecases.workout;
 
+import com.auer.voce_fit.domain.dtos.ReorderRequestDTO;
+import com.auer.voce_fit.domain.entities.Exercise;
 import com.auer.voce_fit.domain.entities.Workout;
 
 import java.util.List;
@@ -10,4 +12,11 @@ public interface WorkoutUseCase {
     List<Workout> getWorkouts();
     Optional<Workout> getWorkout(UUID id);
     void createWorkout(Workout workout);
+    Workout updateWorkout(UUID workoutId, String title);
+    void deleteWorkout(UUID workoutId);
+
+    // Métodos para exercícios
+    List<Exercise> getExercisesByWorkout(UUID workoutId);
+    Workout reorderExercises(UUID workoutId, List<ReorderRequestDTO> reorderRequests);
+    Workout moveExercise(UUID workoutId, UUID exerciseId, String direction);
 }

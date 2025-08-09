@@ -2,8 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { WorkoutCardComponent } from '../workout-card/workout-card.component';
 import { WorkoutService } from '../../services/workout.service';
-import { HttpClientModule } from '@angular/common/http';
-
 interface WorkoutCardData {
   id: string;
   title: string;
@@ -15,7 +13,7 @@ interface WorkoutCardData {
 @Component({
   selector: 'app-workout-list',
   standalone: true,
-  imports: [CommonModule, WorkoutCardComponent, HttpClientModule],
+  imports: [CommonModule, WorkoutCardComponent],
   templateUrl: './workout-list.component.html',
   styleUrls: ['./workout-list.component.scss']
 })

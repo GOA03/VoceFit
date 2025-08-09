@@ -1,0 +1,151 @@
+================================================================================
+REORDENAÇÃO DE EXERCÍCIOS - GUIA COMPLETO
+================================================================================
+
+SISTEMA: VoceFit API
+OBJETIVO: Entender detalhadamente como funciona a reordenação de exercícios
+================================================================================
+
+1. CONCEITO DE REORDENAÇÃO
+A reordenação de exercícios é o processo de alterar a ordem/sequência dos exercícios dentro de um treino específico. Cada exercício possui um campo "sequence" que determina sua posição na lista.
+
+2. ESTRUTURA DO BANCO DE DADOS
+- Tabela: exercises
+- Campo chave: sequence (Integer)
+- Constraint: UNIQUE(workout_id, sequence) - garante que não haja duplicatas
+
+3. FLUXOGRAMA COMPLETO DA REORDENAÇÃO
+┌─────────────────────────────────────────────────────────────────┐
+│                             INÍCIO                              │
+└─────────────────────────────────────────────────────────────────┘
+                                │
+                                ▼
+┌─────────────────────────────────────────────────────────────────┐
+│ 1. RECEBER REQUISIÇÃO DE REORDENAÇÃO                            │
+│    - Endpoint: PATCH /api/exercises/{id}/reorder                │
+│    - Body: ReorderRequestDTO                                    │
+│      {                                                          │
+│        "exerciseId": "uuid",                                    │
+│        "newSequence": 3                                         │
+│      }                                                          │
+└─────────────────────────────────────────────────────────────────┘
+                                │
+                                ▼
+┌─────────────────────────────────────────────────────────────────┐
+│ 2. VALIDAÇÕES INICIAIS                                          │
+│    ├─ Verificar se exerciseId existe                            │
+│    ├─ Verificar se newSequence >= 1                             │
+│    └─ Verificar se exercício pertence ao workout                │
+└─────────────────────────────────────────────────────────────────┘
+                                │
+                                ▼
+┌─────────────────────────────────────────────────────────────────┐
+│ 3. CALCULAR AJUSTES NECESSÁRIOS                                 │
+│    ├─ Obter sequence atual do exercício                         │
+│    ├─ Obter sequence desejada (newSequence)                     │
+│    └─ Determinar direção do movimento:                          │
+│       - Se newSequence < atual: mover para cima                 │
+│       - Se newSequence > atual: mover para baixo                │
+└─────────────────────────────────────────────────────────────────┘
+                                │
+                                ▼
+┌─────────────────────────────────────────────────────────────────┐
+│ 4. ATUALIZAR SEQUÊNCIAS DOS EXERCÍCIOS AFETADOS                 │
+│                                                                 │
+│  CASO 1: Movendo PARA BAIXO (ex: 2 → 5)                         │
+│  ├─ Exercícios entre posição 3-4: sequence - 1                  │
+│  └─ Exercício movido: sequence = 5                              │
+│                                                                 │
+│  CASO 2: Movendo PARA CIMA (ex: 5 → 2)                          │
+│  ├─ Exercícios entre posição 2-4: sequence + 1                  │
+│  └─ Exercício movido: sequence = 2                              │
+└─────────────────────────────────────────────────────────────────┘
+                                │
+                                ▼
+┌─────────────────────────────────────────────────────────────────┐
+│ 5. EXECUTAR ATUALIZAÇÕES NO BANCO                               │
+│    ├─ Iniciar transação                                         │
+│    ├─ Atualizar sequence de todos exercícios afetados           │
+│    ├─ Commit transação                                          │
+│    └─ Se erro: Rollback                                         │
+└─────────────────────────────────────────────────────────────────┘
+                                │
+                                ▼
+┌─────────────────────────────────────────────────────────────────┐
+│ 6. RETORNAR RESPOSTA                                            │
+│    - Status: 200 OK                                             │
+│    - Body: lista atualizada de exercícios                       │
+└─────────────────────────────────────────────────────────────────┘
+                                │
+                                ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                              FIM                                │
+└─────────────────────────────────────────────────────────────────┘
+
+4. DETALHES TÉCNICOS
+
+4.1 Estrutura ReorderRequestDTO
+public record ReorderRequestDTO(
+    UUID exerciseId,      // ID do exercício a ser movido
+    Integer newSequence   // Nova posição desejada (1-indexed)
+)
+
+4.2 Algoritmo de Reordenação
+// Pseudocódigo
+1. exercicioAtual = buscarExercicio(exerciseId)
+2. posicaoAtual = exercicioAtual.getSequence()
+3. posicaoNova = newSequence
+   
+4. se posicaoNova < posicaoAtual:
+   // Movendo para cima
+   para cada exercicio em workout.exercises:
+       se exercicio.sequence >= posicaoNova E exercicio.sequence < posicaoAtual:
+           exercicio.sequence += 1
+   
+5. se posicaoNova > posicaoAtual:
+   // Movendo para baixo
+   para cada exercicio em workout.exercises:
+       se exercicio.sequence > posicaoAtual E exercicio.sequence <= posicaoNova:
+           exercicio.sequence -= 1
+   
+6. exercicioAtual.sequence = posicaoNova
+7. salvarTodasAsAlteracoes()
+
+5. EXEMPLOS PRÁTICOS
+
+Exemplo 1: Movendo exercício da posição 2 para 5
+- Exercício A: sequence 1 (permanece)
+- Exercício B: sequence 2 → 5 (movido)
+- Exercício C: sequence 3 → 2
+- Exercício D: sequence 4 → 3
+- Exercício E: sequence 5 → 4
+
+Exemplo 2: Movendo exercício da posição 5 para 2
+- Exercício A: sequence 1 (permanece)
+- Exercício B: sequence 2 → 3
+- Exercício C: sequence 3 → 4
+- Exercício D: sequence 4 → 5
+- Exercício E: sequence 5 → 2
+
+6. VALIDAÇÕES E RESTRIÇÕES
+- sequence deve ser única por workout (constraint UNIQUE)
+- sequence deve ser >= 1
+- exerciseId deve existir
+- exercício deve pertencer ao workout especificado
+- transação deve ser atômica (todas as alterações ou nenhuma)
+
+7. CONSIDERAÇÕES DE PERFORMANCE
+- Usar transações para garantir consistência
+- Atualizar todos os exercícios em uma única query quando possível
+- Índice no campo (workout_id, sequence) para buscas rápidas
+- Cache de workout pode ser invalidado após reordenação
+
+8. TRATAMENTO DE ERROS
+- InvalidExerciseOrderException: sequence inválida
+- ExerciseNotFoundException: exercício não encontrado
+- WorkoutNotFoundException: workout não encontrado
+- ConstraintViolationException: violação de unicidade
+
+================================================================================
+FIM DO DOCUMENTO
+================================================================================

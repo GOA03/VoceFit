@@ -71,4 +71,10 @@ public class WorkoutController {
             return ResponseEntity.badRequest().build();
         }
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteWorkout(@PathVariable UUID id) {
+        workoutService.deleteWorkout(id);
+        return ResponseEntity.noContent().build(); // HTTP 204 No Content
+    }
 }

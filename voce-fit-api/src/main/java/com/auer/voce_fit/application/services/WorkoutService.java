@@ -25,9 +25,7 @@ public class WorkoutService {
         this.workoutUseCase = workoutUseCase;
     }
 
-    /**
-     * Busca todos os workouts
-     */
+    // Buscar todos os workouts
     public List<WorkoutResponseDTO> getAllWorkouts() {
         return workoutUseCase.getWorkouts().stream()
                 .map(workout -> new WorkoutResponseDTO(
@@ -40,9 +38,7 @@ public class WorkoutService {
                 .toList();
     }
 
-    /**
-     * Busca um workout específico com seus exercícios
-     */
+    // Buscar workout por ID
     public ExerciseByWorkoutResponseDTO getWorkout(UUID workoutId) {
         Workout workout = workoutUseCase.getWorkout(workoutId)
                 .orElseThrow(() -> new WorkoutNotFoundException("Workout não encontrado: " + workoutId));
@@ -60,45 +56,7 @@ public class WorkoutService {
         );
     }
 
-    /**
-     * Reordena exercícios de um workout em lote
-     */
-    @Transactional
-    public ExerciseByWorkoutResponseDTO reorderExercises(UUID workoutId, List<ReorderRequestDTO> reorderRequests) {
-
-        // Validação básica
-        if (reorderRequests == null || reorderRequests.isEmpty()) {
-            throw new InvalidExerciseOrderException("Lista de reordenação não pode estar vazia");
-        }
-
-        // Delegar lógica para o UseCase
-        workoutUseCase.reorderExercises(workoutId, reorderRequests);
-
-        // Retornar workout atualizado
-        return getWorkout(workoutId);
-    }
-
-    /**
-     * Move um exercício para cima ou para baixo
-     */
-    @Transactional
-    public ExerciseByWorkoutResponseDTO moveExercise(UUID workoutId, UUID exerciseId, String direction) {
-
-        // Validação de parâmetros
-        if (!"up".equals(direction) && !"down".equals(direction)) {
-            throw new InvalidExerciseOrderException("Direção deve ser 'up' ou 'down'");
-        }
-
-        // Delegar para o UseCase
-        workoutUseCase.moveExercise(workoutId, exerciseId, direction);
-
-        // Retornar workout atualizado
-        return getWorkout(workoutId);
-    }
-
-    /**
-     * Cria um novo workout
-     */
+    // Criar novo workout
     @Transactional
     public WorkoutResponseDTO createWorkout(String title) {
         Workout workout = Workout.builder()
@@ -112,15 +70,13 @@ public class WorkoutService {
         return new WorkoutResponseDTO(
                 workout.getId(),
                 workout.getTitle(),
-                0, // Sem exercícios inicialmente
+                0,
                 workout.getCreatedAt(),
                 workout.getUpdatedAt()
         );
     }
 
-    /**
-     * Atualiza um workout existente
-     */
+    // Atualizar workout
     @Transactional
     public WorkoutResponseDTO updateWorkout(UUID workoutId, String title) {
         Workout workout = workoutUseCase.updateWorkout(workoutId, title);
@@ -134,17 +90,49 @@ public class WorkoutService {
         );
     }
 
-    /**
-     * Deleta um workout
-     */
+    // Deletar workout
     @Transactional
     public void deleteWorkout(UUID workoutId) {
         workoutUseCase.deleteWorkout(workoutId);
     }
 
-    /**
-     * Mapeia Exercise para ExerciseResponseDTO
-     */
+    // Duplicar workout
+    @Transactional
+    public WorkoutResponseDTO duplicateWorkout(UUID workoutId) {
+        Workout originalWorkout = workoutUseCase.getWorkout(workoutId)
+                .orElseThrow(() -> new WorkoutNotFoundException("Workout não encontrado: " + workoutId));
+
+        String newTitle = originalWorkout.getTitle() + " - Cópia";
+        return createWorkout(newTitle);
+    }
+
+    // === OPERAÇÕES DE EXERCÍCIOS ===
+
+    // Reordenar exercícios em lote
+    @Transactional
+    public ExerciseByWorkoutResponseDTO reorderExercises(UUID workoutId, List<ReorderRequestDTO> reorderRequests) {
+        if (reorderRequests == null || reorderRequests.isEmpty()) {
+            throw new InvalidExerciseOrderException("Lista de reordenação não pode estar vazia");
+        }
+
+        workoutUseCase.reorderExercises(workoutId, reorderRequests);
+        return getWorkout(workoutId);
+    }
+
+    // Mover exercício up/down
+    @Transactional
+    public ExerciseByWorkoutResponseDTO moveExercise(UUID workoutId, UUID exerciseId, String direction) {
+        if (!"up".equals(direction) && !"down".equals(direction)) {
+            throw new InvalidExerciseOrderException("Direção deve ser 'up' ou 'down'");
+        }
+
+        workoutUseCase.moveExercise(workoutId, exerciseId, direction);
+        return getWorkout(workoutId);
+    }
+
+    // === MÉTODOS AUXILIARES ===
+
+    // Mapear entidade para DTO
     private ExerciseResponseDTO mapToExerciseResponseDTO(Exercise exercise) {
         return new ExerciseResponseDTO(
                 exercise.getId(),

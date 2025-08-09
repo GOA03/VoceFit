@@ -35,6 +35,11 @@ public class WorkoutController {
         }
     }
 
+    private ResponseEntity<WorkoutResponseDTO> duplicateWorkout (@PathVariable UUID workoutId) {
+        WorkoutResponseDTO duplicatedWorkout = workoutService.duplicateWorkout(workoutId);
+        return ResponseEntity.status(201).body(duplicatedWorkout);
+    }
+
     @GetMapping
     public ResponseEntity<List<WorkoutResponseDTO>> findAll() {
         List<WorkoutResponseDTO> workouts = workoutService.getAllWorkouts();

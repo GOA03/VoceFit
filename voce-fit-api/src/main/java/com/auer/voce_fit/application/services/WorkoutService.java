@@ -12,6 +12,7 @@ import com.auer.voce_fit.usecases.workout.WorkoutUseCase;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -102,6 +103,8 @@ public class WorkoutService {
     public WorkoutResponseDTO createWorkout(String title) {
         Workout workout = Workout.builder()
                 .title(title)
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
                 .build();
 
         workoutUseCase.createWorkout(workout);

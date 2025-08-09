@@ -35,7 +35,8 @@ public class WorkoutController {
         }
     }
 
-    private ResponseEntity<WorkoutResponseDTO> duplicateWorkout (@PathVariable UUID workoutId) {
+    @PostMapping("/{workoutId}/duplicate")
+    public ResponseEntity<WorkoutResponseDTO> duplicateWorkout (@PathVariable UUID workoutId) {
         WorkoutResponseDTO duplicatedWorkout = workoutService.duplicateWorkout(workoutId);
         return ResponseEntity.status(201).body(duplicatedWorkout);
     }

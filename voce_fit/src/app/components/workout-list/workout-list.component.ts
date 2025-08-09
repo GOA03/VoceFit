@@ -75,20 +75,11 @@ export class WorkoutListComponent implements OnInit {
   }
 
   onDuplicateWorkout(workoutId: string): void {
+    // Agora apenas emitimos o ID do workout para o componente pai
+    // O serviço de duplicação será chamado no componente pai
     this.workoutService.getWorkoutById(workoutId).subscribe({
       next: (workout) => {
-        // Criamos uma cópia sem o id para que o backend gere um novo id
-        const { id, ...workoutWithoutId } = workout;
-        const workoutCopy = {
-          ...workoutWithoutId,
-          title: `${workout.title} (Cópia)`,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString()
-        };
-
-        // Emite o workout para o componente pai
-        // Usa o id original apenas para satisfazer a interface, será ignorado no createWorkout :D
-        this.duplicateWorkout.emit({ ...workoutCopy, id: 'temp-id' } as Workout);
+        this.duplicateWorkout.emit(workout);
       },
       error: (error) => {
         console.error('Erro ao duplicar treino:', error);

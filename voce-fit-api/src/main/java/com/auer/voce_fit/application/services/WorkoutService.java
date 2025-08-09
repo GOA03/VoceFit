@@ -6,7 +6,6 @@ import com.auer.voce_fit.domain.dtos.ReorderRequestDTO;
 import com.auer.voce_fit.domain.dtos.WorkoutResponseDTO;
 import com.auer.voce_fit.domain.entities.Exercise;
 import com.auer.voce_fit.domain.entities.Workout;
-import com.auer.voce_fit.domain.exceptions.ExerciseNotFoundException;
 import com.auer.voce_fit.domain.exceptions.InvalidExerciseOrderException;
 import com.auer.voce_fit.domain.exceptions.WorkoutNotFoundException;
 import com.auer.voce_fit.usecases.workout.WorkoutUseCase;

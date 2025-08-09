@@ -47,6 +47,16 @@ public class WorkoutController {
         return ResponseEntity.ok(workouts);
     }
 
+    @PutMapping("{id}")
+    public ResponseEntity<WorkoutResponseDTO> updateWorkout(@PathVariable UUID id,  @RequestBody WorkoutRequestDTO request) {
+        try {
+            WorkoutResponseDTO workout = workoutService.updateWorkout(id, request.title());
+            return ResponseEntity.ok(workout);
+        } catch (RuntimeException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     @PutMapping("/{workoutId}/exercises/order")
     public ResponseEntity<ExerciseByWorkoutResponseDTO> reorderExercises(
             @PathVariable UUID workoutId,

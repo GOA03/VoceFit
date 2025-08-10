@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { WorkoutCardComponent } from '../workout-card/workout-card.component';
 import { WorkoutService } from '../../services/workout.service';
 import { Workout } from '../../models/workout.model';
+import { AlertService } from '../../services/alert.service';
 interface WorkoutCardData {
   id: string;
   title: string;
@@ -26,7 +27,10 @@ export class WorkoutListComponent implements OnInit {
   loading = true;
   error: string | null = null;
 
-  constructor(private workoutService: WorkoutService) { }
+  constructor(
+    private workoutService: WorkoutService,
+    private alertService: AlertService
+  ) { }
 
   ngOnInit(): void {
     this.loadWorkouts();
@@ -63,7 +67,7 @@ export class WorkoutListComponent implements OnInit {
       },
       error: (error) => {
         console.error('Erro ao carregar treino para edição:', error);
-        alert('Erro ao carregar treino para edição. Por favor, tente novamente.');
+        this.alertService.error('Erro ao carregar treino para edição. Por favor, tente novamente.');
       }
     });
   }
@@ -83,7 +87,7 @@ export class WorkoutListComponent implements OnInit {
       },
       error: (error) => {
         console.error('Erro ao duplicar treino:', error);
-        alert('Erro ao duplicar treino. Por favor, tente novamente.');
+        this.alertService.error('Erro ao duplicar treino. Por favor, tente novamente.');
       }
     });
   }

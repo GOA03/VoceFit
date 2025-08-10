@@ -32,7 +32,7 @@ $spinner-color: #60A5FA;
     padding: 2rem;
     text-align: center;
     color: $text-secondary;
-    
+
     &::before {
       content: "";
       width: 50px;
@@ -43,7 +43,7 @@ $spinner-color: #60A5FA;
       border-top-color: $spinner-color;
       animation: spin 1s ease-in-out infinite;
     }
-    
+
     p {
       font-size: 16px;
       font-weight: 500;
@@ -69,7 +69,7 @@ $spinner-color: #60A5FA;
     max-width: 400px;
     text-align: center;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    
+
     &::before {
       content: "❌";
       font-size: 24px;
@@ -83,13 +83,13 @@ $spinner-color: #60A5FA;
       align-items: center;
       justify-content: center;
     }
-    
+
     p {
       font-size: 16px;
       color: $text-secondary;
       margin: 0 0 1.5rem 0;
     }
-    
+
     button {
       background-color: $primary-color;
       color: white;
@@ -101,11 +101,11 @@ $spinner-color: #60A5FA;
       cursor: pointer;
       transition: background-color 0.2s ease, transform 0.1s ease;
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-      
+
       &:hover {
         transform: translateY(-1px);
       }
-      
+
       &:active {
         transform: translateY(0);
       }
@@ -117,7 +117,7 @@ $spinner-color: #60A5FA;
     text-align: center;
     padding: 48px 0;
     color: $text-secondary;
-    
+
     &::before {
       content: "📋";
       font-size: 32px;
@@ -125,7 +125,7 @@ $spinner-color: #60A5FA;
       color: $text-secondary;
       display: block;
     }
-    
+
     p {
       font-size: 16px;
       color: $text-secondary;

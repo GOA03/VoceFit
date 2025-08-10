@@ -1,0 +1,13 @@
+<div *ngIf="visible" class="alert-container" [ngClass]="'alert-' + type">
+  <div class="alert-content">
+    <div *ngIf="showIcon" class="alert-icon">
+      <lucide-icon [name]="iconName" size="20"></lucide-icon>
+    </div>
+    <div class="alert-message">
+      {{ message }}
+    </div>
+    <button *ngIf="closable" class="alert-close" (click)="close()" aria-label="Fechar alerta">
+      <lucide-icon name="x" size="16"></lucide-icon>
+    </button>
+  </div>
+</div>

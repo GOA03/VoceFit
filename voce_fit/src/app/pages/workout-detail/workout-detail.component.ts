@@ -10,6 +10,7 @@ import { ExerciseService } from '../../services/exercise.service';
 import { WorkoutService, Workout } from '../../services/workout.service';
 import { Exercise } from '../../models/exercise.model';
 import { LucideAngularModule } from "lucide-angular";
+import { AlertService } from '../../services/alert.service';
 
 @Component({
   selector: 'app-workout-detail',
@@ -43,7 +44,8 @@ export class WorkoutDetailComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private exerciseService: ExerciseService,
-    private workoutService: WorkoutService
+    private workoutService: WorkoutService,
+    private alertService: AlertService
   ) {}
 
   ngOnInit(): void {
@@ -118,10 +120,12 @@ export class WorkoutDetailComponent implements OnInit {
             this.exercises[index] = updatedExercise;
           }
           this.loadWorkout(); // Reload to ensure consistency
+          this.closeExerciseForm();
+          this.alertService.success('Exercício atualizado com sucesso!');
         },
         error: (error) => {
           console.error('Erro ao atualizar exercício:', error);
-          alert('Erro ao atualizar exercício. Tente novamente.');
+          this.alertService.error('Erro ao atualizar exercício. Por favor, tente novamente.');
         }
       });
     } else {
@@ -130,10 +134,12 @@ export class WorkoutDetailComponent implements OnInit {
         next: (newExercise) => {
           this.exercises.push(newExercise);
           this.loadWorkout(); // Reload to ensure consistency
+          this.closeExerciseForm();
+          this.alertService.success('Exercício criado com sucesso!');
         },
         error: (error) => {
           console.error('Erro ao criar exercício:', error);
-          alert('Erro ao criar exercício. Tente novamente.');
+          this.alertService.error('Erro ao criar exercício. Por favor, tente novamente.');
         }
       });
     }
@@ -152,10 +158,40 @@ export class WorkoutDetailComponent implements OnInit {
   }
 
   onDeleteExercise(id: string): void {
-    console.log('Excluir exercício:', id);
+    if (confirm('Tem certeza que deseja excluir este exercício?')) {
+      this.exerciseService.deleteExercise(id).subscribe({
+        next: () => {
+          this.exercises = this.exercises.filter(ex => ex.id !== id);
+          this.loadWorkout(); // Reload to ensure consistency
+          this.alertService.success('Exercício excluído com sucesso!');
+        },
+        error: (error) => {
+          console.error('Erro ao excluir exercício:', error);
+          this.alertService.error('Erro ao excluir exercício. Por favor, tente novamente.');
+        }
+      });
+    }
   }
 
   onDuplicateExercise(exercise: Exercise): void {
-    console.log('Duplicar exercício:', exercise);
+    if (!this.workoutId) return;
+
+    const duplicatedExercise: Exercise = {
+      ...exercise,
+      name: `${exercise.name} (Cópia)`,
+      workoutId: this.workoutId
+    };
+
+    this.exerciseService.createExercise(duplicatedExercise).subscribe({
+      next: (newExercise) => {
+        this.exercises.push(newExercise);
+        this.loadWorkout(); // Reload to ensure consistency
+        this.alertService.success('Exercício duplicado com sucesso!');
+      },
+      error: (error) => {
+        console.error('Erro ao duplicar exercício:', error);
+        this.alertService.error('Erro ao duplicar exercício. Por favor, tente novamente.');
+      }
+    });
   }
 }

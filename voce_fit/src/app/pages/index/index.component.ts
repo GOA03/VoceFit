@@ -7,6 +7,7 @@ import { Workout } from '../../models/workout.model';
 
 import { WorkoutService } from '../../services/workout.service';
 import { WorkoutFormService } from '../../services/workout-form.service';
+import { AlertService } from '../../services/alert.service';
 
 @Component({
   selector: 'app-index',
@@ -25,7 +26,7 @@ export class IndexComponent {
 
   constructor(
     private workoutService: WorkoutService,
-    private workoutFormService: WorkoutFormService
+    private alertService: AlertService
   ) {}
 
   formState = {
@@ -64,10 +65,12 @@ export class IndexComponent {
           if (this.workoutListComponent) {
             this.workoutListComponent.loadWorkouts();
           }
+          this.closeWorkoutForm();
+          this.alertService.success('Treino criado com sucesso!');
         },
         error: (error) => {
           console.error('Erro ao criar treino:', error);
-          alert('Erro ao criar treino. Por favor, tente novamente.');
+          this.alertService.error('Erro ao criar treino. Por favor, tente novamente.');
         }
       });
     } else if (this.formState.mode === 'edit' && this.formState.workout) {
@@ -85,10 +88,12 @@ export class IndexComponent {
           if (this.workoutListComponent) {
             this.workoutListComponent.loadWorkouts();
           }
+          this.closeWorkoutForm();
+          this.alertService.success('Treino atualizado com sucesso!');
         },
         error: (error) => {
           console.error('Erro ao atualizar treino:', error);
-          alert('Erro ao atualizar treino. Por favor, tente novamente.');
+          this.alertService.error('Erro ao atualizar treino. Por favor, tente novamente.');
         }
       });
     }
@@ -102,10 +107,11 @@ export class IndexComponent {
         if (this.workoutListComponent) {
           this.workoutListComponent.loadWorkouts();
         }
+        this.alertService.success('Treino excluído com sucesso!');
       },
       error: (error) => {
         console.error('Erro ao excluir treino:', error);
-        alert('Erro ao excluir treino. Por favor, tente novamente.');
+        this.alertService.error('Erro ao excluir treino. Por favor, tente novamente.');
       }
     });
   }
@@ -119,10 +125,11 @@ export class IndexComponent {
         if (this.workoutListComponent) {
           this.workoutListComponent.loadWorkouts();
         }
+        this.alertService.success('Treino duplicado com sucesso!');
       },
       error: (error) => {
         console.error('Erro ao duplicar treino:', error);
-        alert('Erro ao duplicar treino. Por favor, tente novamente.');
+        this.alertService.error('Erro ao duplicar treino. Por favor, tente novamente.');
       }
     });
   }

@@ -42,4 +42,14 @@ public class ExerciseController {
         return ResponseEntity.ok(exercise);
 
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<ExerciseResponseDTO> updateExercise(@PathVariable UUID id, @RequestBody ExerciseRequestDTO exerciseRequestDTO) {
+        try {
+            ExerciseResponseDTO exercise = exerciseService.updateExercise(id, exerciseRequestDTO);
+            return ResponseEntity.ok(exercise);
+        } catch (RuntimeException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

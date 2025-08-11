@@ -1,5 +1,6 @@
 package com.auer.voce_fit.usecases.exercise;
 
+import com.auer.voce_fit.domain.dtos.ExerciseRequestDTO;
 import com.auer.voce_fit.domain.entities.Exercise;
 import org.springframework.stereotype.Component;
 
@@ -11,7 +12,8 @@ public interface ExerciseUseCase {
 
     Exercise getExerciseById(UUID id);
     List<Exercise> getExercises();
-    List<Exercise> getExercisesByWorkoutId(UUID id);
+    // List<Exercise> getExercisesByWorkoutId(UUID id);
 
     void createExercise(Exercise exercise);
+    Exercise updateExercise(UUID id, ExerciseRequestDTO exerciseRequestDTO);
 }

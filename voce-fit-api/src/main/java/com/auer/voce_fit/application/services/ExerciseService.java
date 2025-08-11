@@ -82,4 +82,20 @@ public class ExerciseService {
                 exercise.getSequence()
         );
     }
+
+    public ExerciseResponseDTO updateExercise(UUID id, ExerciseRequestDTO exerciseRequestDTO) {
+        Exercise exercise = exerciseUseCase.updateExercise(id, exerciseRequestDTO);
+
+        return new ExerciseResponseDTO(
+                exercise.getId(),
+                exercise.getName(),
+                exercise.getSets(),
+                exercise.getReps(),
+                exercise.getWeight(),
+                exercise.getRestTime(),
+                exercise.getNotes(),
+                exercise.getWorkout().getId(),
+                exercise.getSequence()
+        );
+    }
 }

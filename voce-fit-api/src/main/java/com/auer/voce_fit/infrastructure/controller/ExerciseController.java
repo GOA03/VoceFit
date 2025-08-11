@@ -52,4 +52,10 @@ public class ExerciseController {
             throw new RuntimeException(e);
         }
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ExerciseResponseDTO> deleteExercise(@PathVariable UUID id) {
+        exerciseService.deleteExercise(id);
+        return ResponseEntity.noContent().build();
+    }
 }

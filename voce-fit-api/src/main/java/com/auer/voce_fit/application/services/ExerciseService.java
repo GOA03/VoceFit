@@ -98,4 +98,8 @@ public class ExerciseService {
                 exercise.getSequence()
         );
     }
+
+    public void deleteExercise(UUID id) {
+        exerciseUseCase.deleteExercise(id);
+    }
 }

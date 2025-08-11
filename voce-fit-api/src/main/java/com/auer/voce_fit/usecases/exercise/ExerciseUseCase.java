@@ -9,6 +9,9 @@ import java.util.UUID;
 @Component
 public interface ExerciseUseCase {
 
+    Exercise getExerciseById(UUID id);
     List<Exercise> getExercises();
     List<Exercise> getExercisesByWorkoutId(UUID id);
+
+    void createExercise(Exercise exercise);
 }

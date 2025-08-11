@@ -38,19 +38,24 @@ public class WorkoutUseCaseImpl implements WorkoutUseCase {
     }
 
     @Override
-    @Transactional
+    @Transactional // Abre transação, garante commit/rollback
     public void createWorkout(Workout workout) {
+        // Objeto novo → precisa salvar para inserir no banco
         workoutRepository.save(workout);
     }
 
     @Override
-    @Transactional
+    @Transactional // Abre transação
     public Workout updateWorkout(UUID workoutId, String title) {
+        // Busca entidade existente → já gerenciada pelo Hibernate
         Workout workout = workoutRepository.findById(workoutId)
                 .orElseThrow(() -> new WorkoutNotFoundException("Workout não encontrado: " + workoutId));
 
+        // Alteração detectada automaticamente (dirty checking)
         workout.setTitle(title);
-        return workoutRepository.save(workout);
+
+        // Não precisa save(), Hibernate fará o UPDATE no commit
+        return workout;
     }
 
     @Override

@@ -46,6 +46,10 @@ public class Exercise {
     @org.hibernate.annotations.CreationTimestamp
     private LocalDateTime createdAt;
 
+    @Column(name = "updated_at", nullable = false)
+    @org.hibernate.annotations.UpdateTimestamp
+    private LocalDateTime updatedAt;
+
     @Column(nullable = false)
     private Integer sequence;
 }

@@ -1,12 +1,10 @@
 package com.auer.voce_fit.infrastructure.controller;
 
 import com.auer.voce_fit.application.services.ExerciseService;
+import com.auer.voce_fit.domain.dtos.ExerciseRequestDTO;
 import com.auer.voce_fit.domain.dtos.ExerciseResponseDTO;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
@@ -21,6 +19,16 @@ public class ExerciseController {
         this.exerciseService = exerciseService;
     }
 
+    @PostMapping
+    public ResponseEntity<ExerciseResponseDTO> createExercise(@RequestBody ExerciseRequestDTO exerciseRequestDTO) {
+        try {
+            ExerciseResponseDTO exercise = exerciseService.createExercise(exerciseRequestDTO);
+            return ResponseEntity.status(201).body(exercise);
+        } catch (RuntimeException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     @GetMapping
     public ResponseEntity<List<ExerciseResponseDTO>> getAllWorkouts() {
         List<ExerciseResponseDTO> exercises = exerciseService.getAllExercises();
@@ -29,9 +37,9 @@ public class ExerciseController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<List<ExerciseResponseDTO>> getExercisesByWorkoutId(@PathVariable UUID id) {
-        List<ExerciseResponseDTO> exercises = exerciseService.getExercisesByWorkoutId(id);
-        return ResponseEntity.ok(exercises);
+    public ResponseEntity<ExerciseResponseDTO> getExerciseById(@PathVariable UUID id) {
+        ExerciseResponseDTO exercise = exerciseService.getExerciseById(id);
+        return ResponseEntity.ok(exercise);
 
     }
 }

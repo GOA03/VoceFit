@@ -6,7 +6,6 @@ import { WorkoutFormComponent, WorkoutFormData } from "../../components/workout-
 import { Workout } from '../../models/workout.model';
 
 import { WorkoutService } from '../../services/workout.service';
-import { WorkoutFormService } from '../../services/workout-form.service';
 import { AlertService } from '../../services/alert.service';
 
 @Component({

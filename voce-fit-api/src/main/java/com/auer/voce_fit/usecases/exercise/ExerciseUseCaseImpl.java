@@ -60,4 +60,11 @@ public class ExerciseUseCaseImpl implements ExerciseUseCase {
         return exercise;
     }
 
+    @Override
+    public void deleteExercise(UUID id) {
+        if (!exerciseRepository.existsById(id)) {
+            throw new ExerciseNotFoundException("Exercício não encontrado: " + id);
+        }
+        exerciseRepository.deleteById(id);
+    }
 }

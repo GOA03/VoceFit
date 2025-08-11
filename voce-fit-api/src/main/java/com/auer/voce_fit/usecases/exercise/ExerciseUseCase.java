@@ -12,8 +12,9 @@ public interface ExerciseUseCase {
 
     Exercise getExerciseById(UUID id);
     List<Exercise> getExercises();
-    // List<Exercise> getExercisesByWorkoutId(UUID id);
-
     void createExercise(Exercise exercise);
     Exercise updateExercise(UUID id, ExerciseRequestDTO exerciseRequestDTO);
+    void deleteExercise(UUID id);
+
+    // List<Exercise> getExercisesByWorkoutId(UUID id);
 }

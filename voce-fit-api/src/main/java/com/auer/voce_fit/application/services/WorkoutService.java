@@ -27,6 +27,7 @@ public class WorkoutService {
 
     // Buscar todos os workouts
     public List<WorkoutResponseDTO> getAllWorkouts() {
+
         return workoutUseCase.getWorkouts().stream()
                 .map(workout -> new WorkoutResponseDTO(
                         workout.getId(),
@@ -99,11 +100,15 @@ public class WorkoutService {
     // Duplicar workout
     @Transactional
     public WorkoutResponseDTO duplicateWorkout(UUID workoutId) {
-        Workout originalWorkout = workoutUseCase.getWorkout(workoutId)
-                .orElseThrow(() -> new WorkoutNotFoundException("Workout não encontrado: " + workoutId));
+        Workout workoutDuplicated = workoutUseCase.duplicateWorkout(workoutId);
 
-        String newTitle = originalWorkout.getTitle() + " - Cópia";
-        return createWorkout(newTitle);
+        return new WorkoutResponseDTO(
+                workoutDuplicated.getId(),
+                workoutDuplicated.getTitle(),
+                workoutDuplicated.getExercises() != null ? workoutDuplicated.getExercises().size() : 0,
+                workoutDuplicated.getCreatedAt(),
+                workoutDuplicated.getUpdatedAt()
+        );
     }
 
     // === OPERAÇÕES DE EXERCÍCIOS ===
@@ -116,17 +121,6 @@ public class WorkoutService {
         }
 
         workoutUseCase.reorderExercises(workoutId, reorderRequests);
-        return getWorkout(workoutId);
-    }
-
-    // Mover exercício up/down
-    @Transactional
-    public ExerciseByWorkoutResponseDTO moveExercise(UUID workoutId, UUID exerciseId, String direction) {
-        if (!"up".equals(direction) && !"down".equals(direction)) {
-            throw new InvalidExerciseOrderException("Direção deve ser 'up' ou 'down'");
-        }
-
-        workoutUseCase.moveExercise(workoutId, exerciseId, direction);
         return getWorkout(workoutId);
     }
 

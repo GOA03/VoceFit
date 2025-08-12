@@ -11,9 +11,11 @@ import com.auer.voce_fit.infrastructure.persistence.JpaWorkoutRepository;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Component
 public class WorkoutUseCaseImpl implements WorkoutUseCase {
@@ -68,6 +70,37 @@ public class WorkoutUseCaseImpl implements WorkoutUseCase {
     }
 
     @Override
+    public Workout duplicateWorkout(UUID workoutId) {
+        Workout originalWorkout  = workoutRepository.findById(workoutId)
+                .orElseThrow(() -> new WorkoutNotFoundException("Treino não encontrado: " + workoutId));
+
+        Workout newWorkout = Workout.builder()
+            .title(originalWorkout.getTitle() + " (Copia)")
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .build();
+
+        if (originalWorkout.getExercises() != null) {
+            List<Exercise> newExercises = originalWorkout.getExercises().stream()
+                    .map(originalExercise -> Exercise.builder()
+                            .workout(newWorkout)
+                            .name(originalExercise.getName())
+                            .sets(originalExercise.getSets())
+                            .reps(originalExercise.getReps())
+                            .weight(originalExercise.getWeight())
+                            .restTime(originalExercise.getRestTime())
+                            .notes(originalExercise.getNotes())
+                            .sequence(originalExercise.getSequence())
+                            .build()
+                    ).collect(Collectors.toList());
+
+            newWorkout.setExercises(newExercises);
+        }
+
+        return workoutRepository.save(newWorkout);
+    }
+
+    @Override
     public List<Exercise> getExercisesByWorkout(UUID workoutId) {
         return exerciseRepository.findByWorkoutId(workoutId);
     }
@@ -98,44 +131,6 @@ public class WorkoutUseCaseImpl implements WorkoutUseCase {
                 .orElseThrow(() -> new WorkoutNotFoundException("Workout não encontrado: " + workoutId));
     }
 
-    @Override
-    @Transactional
-    public Workout moveExercise(UUID workoutId, UUID exerciseId, String direction) {
-
-        // Validar se workout existe
-        Workout workout = workoutRepository.findById(workoutId)
-                .orElseThrow(() -> new WorkoutNotFoundException("Workout não encontrado: " + workoutId));
-
-        // Buscar exercício
-        Exercise exercise = exerciseRepository.findById(exerciseId)
-                .orElseThrow(() -> new ExerciseNotFoundException("Exercício não encontrado: " + exerciseId));
-
-        // Validar se exercício pertence ao workout
-        if (!exercise.getWorkout().getId().equals(workoutId)) {
-            throw new InvalidExerciseOrderException("Exercício não pertence ao workout informado");
-        }
-
-        Integer currentSequence = exercise.getSequence();
-        int newSequence;
-
-        if ("up".equals(direction)) {
-            newSequence = Math.max(1, currentSequence - 1);
-        } else { // "down"
-            newSequence = currentSequence + 1;
-        }
-
-        // Se não mudou, não faz nada
-        if (currentSequence.equals(newSequence)) {
-            return workout;
-        }
-
-        // Trocar posições
-        swapExerciseSequences(workoutId, currentSequence, newSequence);
-
-        return workoutRepository.findById(workoutId)
-                .orElseThrow(() -> new WorkoutNotFoundException("Workout não encontrado: " + workoutId));
-    }
-
     private void validateExercisesBelongToWorkout(UUID workoutId, List<ReorderRequestDTO> requests) {
         for (ReorderRequestDTO request : requests) {
             Exercise exercise = exerciseRepository.findById(request.exerciseId())
@@ -145,30 +140,6 @@ public class WorkoutUseCaseImpl implements WorkoutUseCase {
                 throw new InvalidExerciseOrderException(
                         "Exercício " + request.exerciseId() + " não pertence ao workout " + workoutId);
             }
-        }
-    }
-
-    private void swapExerciseSequences(UUID workoutId, Integer seq1, Integer seq2) {
-        List<Exercise> exercises = exerciseRepository.findByWorkoutId(workoutId);
-
-        Exercise exercise1 = exercises.stream()
-                .filter(e -> e.getSequence().equals(seq1))
-                .findFirst().orElse(null);
-
-        Exercise exercise2 = exercises.stream()
-                .filter(e -> e.getSequence().equals(seq2))
-                .findFirst().orElse(null);
-
-        if (exercise1 != null && exercise2 != null) {
-            // Trocar sequences
-            exercise1.setSequence(seq2);
-            exercise2.setSequence(seq1);
-            exerciseRepository.save(exercise1);
-            exerciseRepository.save(exercise2);
-        } else if (exercise1 != null) {
-            // Apenas mover o exercício
-            exercise1.setSequence(seq2);
-            exerciseRepository.save(exercise1);
         }
     }
 }

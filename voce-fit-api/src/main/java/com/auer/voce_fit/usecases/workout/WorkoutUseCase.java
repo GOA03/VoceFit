@@ -14,9 +14,8 @@ public interface WorkoutUseCase {
     void createWorkout(Workout workout);
     Workout updateWorkout(UUID workoutId, String title);
     void deleteWorkout(UUID workoutId);
+    Workout duplicateWorkout(UUID workoutId);
 
-    // Métodos para exercícios
     List<Exercise> getExercisesByWorkout(UUID workoutId);
     Workout reorderExercises(UUID workoutId, List<ReorderRequestDTO> reorderRequests);
-    Workout moveExercise(UUID workoutId, UUID exerciseId, String direction);
 }

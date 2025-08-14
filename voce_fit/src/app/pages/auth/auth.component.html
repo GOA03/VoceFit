@@ -1,0 +1,249 @@
+<div class="auth-container">
+  <div class="auth-card">
+    <!-- Logo e título -->
+    <div class="auth-header">
+      <div class="logo-container">
+        <div class="logo-bg">
+          <lucide-icon name="dumbbell" size="24" class="logo-icon"></lucide-icon>
+        </div>
+        <h1 class="app-title">VoceFit</h1>
+      </div>
+      <p class="auth-subtitle">
+        {{ isLoginMode ? 'Entre na sua conta' : 'Crie sua conta' }}
+      </p>
+    </div>
+
+    <!-- Alternador de modo -->
+    <div class="mode-toggle">
+      <button 
+        type="button" 
+        class="toggle-btn" 
+        [class.active]="isLoginMode"
+        (click)="isLoginMode = true"
+      >
+        <lucide-icon [img]="LogInIcon" size="16" class="toggle-icon"></lucide-icon>
+        Entrar
+      </button>
+      <button 
+        type="button" 
+        class="toggle-btn" 
+        [class.active]="!isLoginMode"
+        (click)="isLoginMode = false"
+      >
+        <lucide-icon [img]="UserPlusIcon" size="16" class="toggle-icon"></lucide-icon>
+        Cadastrar
+      </button>
+    </div>
+
+    <!-- Formulário de Login -->
+    <form 
+      *ngIf="isLoginMode" 
+      [formGroup]="loginForm" 
+      (ngSubmit)="onSubmit()" 
+      class="auth-form"
+    >
+      <!-- Email -->
+      <div class="form-group">
+        <label for="login-email" class="form-label">
+          <lucide-icon [img]="MailIcon" size="16" class="label-icon"></lucide-icon>
+          Email
+        </label>
+        <input
+          id="login-email"
+          type="email"
+          formControlName="email"
+          placeholder="seu@email.com"
+          class="form-input"
+          [class.error]="isFieldInvalid('email')"
+        />
+        <div class="error-message" *ngIf="isFieldInvalid('email')">
+          {{ getErrorMessage('email') }}
+        </div>
+      </div>
+
+      <!-- Senha -->
+      <div class="form-group">
+        <label for="login-password" class="form-label">
+          <lucide-icon [img]="LockIcon" size="16" class="label-icon"></lucide-icon>
+          Senha
+        </label>
+        <div class="password-input-container">
+          <input
+            id="login-password"
+            [type]="showPassword ? 'text' : 'password'"
+            formControlName="password"
+            placeholder="Sua senha"
+            class="form-input password-input"
+            [class.error]="isFieldInvalid('password')"
+          />
+          <button
+            type="button"
+            class="password-toggle"
+            (click)="togglePasswordVisibility()"
+            [attr.aria-label]="showPassword ? 'Ocultar senha' : 'Mostrar senha'"
+          >
+            <lucide-icon 
+              [img]="showPassword ? EyeOffIcon : EyeIcon" 
+              size="16"
+            ></lucide-icon>
+          </button>
+        </div>
+        <div class="error-message" *ngIf="isFieldInvalid('password')">
+          {{ getErrorMessage('password') }}
+        </div>
+      </div>
+
+      <!-- Botão de submit -->
+      <button 
+        type="submit" 
+        class="submit-btn"
+        [disabled]="loginForm.invalid || isLoading"
+        [class.loading]="isLoading"
+      >
+        <span *ngIf="!isLoading" class="btn-content">
+          <lucide-icon [img]="LogInIcon" size="16" class="btn-icon"></lucide-icon>
+          Entrar
+        </span>
+        <span *ngIf="isLoading" class="loading-spinner"></span>
+      </button>
+    </form>
+
+    <!-- Formulário de Cadastro -->
+    <form 
+      *ngIf="!isLoginMode" 
+      [formGroup]="registerForm" 
+      (ngSubmit)="onSubmit()" 
+      class="auth-form"
+    >
+      <!-- Nome -->
+      <div class="form-group">
+        <label for="register-name" class="form-label">
+          <lucide-icon [img]="UserIcon" size="16" class="label-icon"></lucide-icon>
+          Nome completo
+        </label>
+        <input
+          id="register-name"
+          type="text"
+          formControlName="name"
+          placeholder="Seu nome completo"
+          class="form-input"
+          [class.error]="isFieldInvalid('name')"
+        />
+        <div class="error-message" *ngIf="isFieldInvalid('name')">
+          {{ getErrorMessage('name') }}
+        </div>
+      </div>
+
+      <!-- Email -->
+      <div class="form-group">
+        <label for="register-email" class="form-label">
+          <lucide-icon [img]="MailIcon" size="16" class="label-icon"></lucide-icon>
+          Email
+        </label>
+        <input
+          id="register-email"
+          type="email"
+          formControlName="email"
+          placeholder="seu@email.com"
+          class="form-input"
+          [class.error]="isFieldInvalid('email')"
+        />
+        <div class="error-message" *ngIf="isFieldInvalid('email')">
+          {{ getErrorMessage('email') }}
+        </div>
+      </div>
+
+      <!-- Senha -->
+      <div class="form-group">
+        <label for="register-password" class="form-label">
+          <lucide-icon [img]="LockIcon" size="16" class="label-icon"></lucide-icon>
+          Senha
+        </label>
+        <div class="password-input-container">
+          <input
+            id="register-password"
+            [type]="showPassword ? 'text' : 'password'"
+            formControlName="password"
+            placeholder="Mínimo 6 caracteres"
+            class="form-input password-input"
+            [class.error]="isFieldInvalid('password')"
+          />
+          <button
+            type="button"
+            class="password-toggle"
+            (click)="togglePasswordVisibility()"
+            [attr.aria-label]="showPassword ? 'Ocultar senha' : 'Mostrar senha'"
+          >
+            <lucide-icon 
+              [img]="showPassword ? EyeOffIcon : EyeIcon" 
+              size="16"
+            ></lucide-icon>
+          </button>
+        </div>
+        <div class="error-message" *ngIf="isFieldInvalid('password')">
+          {{ getErrorMessage('password') }}
+        </div>
+      </div>
+
+      <!-- Confirmar Senha -->
+      <div class="form-group">
+        <label for="register-confirm-password" class="form-label">
+          <lucide-icon [img]="LockIcon" size="16" class="label-icon"></lucide-icon>
+          Confirmar senha
+        </label>
+        <div class="password-input-container">
+          <input
+            id="register-confirm-password"
+            [type]="showConfirmPassword ? 'text' : 'password'"
+            formControlName="confirmPassword"
+            placeholder="Confirme sua senha"
+            class="form-input password-input"
+            [class.error]="isFieldInvalid('confirmPassword')"
+          />
+          <button
+            type="button"
+            class="password-toggle"
+            (click)="toggleConfirmPasswordVisibility()"
+            [attr.aria-label]="showConfirmPassword ? 'Ocultar senha' : 'Mostrar senha'"
+          >
+            <lucide-icon 
+              [img]="showConfirmPassword ? EyeOffIcon : EyeIcon" 
+              size="16"
+            ></lucide-icon>
+          </button>
+        </div>
+        <div class="error-message" *ngIf="isFieldInvalid('confirmPassword')">
+          {{ getErrorMessage('confirmPassword') }}
+        </div>
+      </div>
+
+      <!-- Botão de submit -->
+      <button 
+        type="submit" 
+        class="submit-btn"
+        [disabled]="registerForm.invalid || isLoading"
+        [class.loading]="isLoading"
+      >
+        <span *ngIf="!isLoading" class="btn-content">
+          <lucide-icon [img]="UserPlusIcon" size="16" class="btn-icon"></lucide-icon>
+          Criar conta
+        </span>
+        <span *ngIf="isLoading" class="loading-spinner"></span>
+      </button>
+    </form>
+
+    <!-- Footer -->
+    <div class="auth-footer">
+      <p class="footer-text">
+        {{ isLoginMode ? 'Não tem uma conta?' : 'Já tem uma conta?' }}
+        <button 
+          type="button" 
+          class="link-btn" 
+          (click)="toggleMode()"
+        >
+          {{ isLoginMode ? 'Cadastre-se' : 'Faça login' }}
+        </button>
+      </p>
+    </div>
+  </div>
+</div>

@@ -66,7 +66,7 @@ export class WorkoutCardComponent implements AfterViewInit, OnDestroy {
 
   private navigateToWorkout(): void {
     if (this.workout) {
-      this.router.navigate(['/workouts', this.workout.id]);
+      this.router.navigate(['/workout', this.workout.id]);
     }
   }
 

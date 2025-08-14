@@ -11,8 +11,8 @@
       </div>
     </div>
 
-    <!-- Usuário -->
-    <div class="header-user">
+    <!-- Usuário Autenticado -->
+    <div class="header-user" *ngIf="isAuthenticated">
       <div class="header-avatar">
         <div class="header-avatar-circle">
           {{ firstLetter }}
@@ -20,8 +20,16 @@
         <span class="header-name">{{ userName }}</span>
       </div>
 
-      <button class="header-logout" (click)="onLogout()">
+      <button class="header-logout" (click)="onLogout()" [attr.aria-label]="'Fazer logout de ' + userName">
         <lucide-icon name="log-out" size="16" class="icon-logout"></lucide-icon>
+      </button>
+    </div>
+
+    <!-- Botão de Login -->
+    <div class="header-auth" *ngIf="!isAuthenticated">
+      <button class="header-login-btn" (click)="onLogin()">
+        <lucide-icon name="log-in" size="16" class="icon-login"></lucide-icon>
+        <span>Entrar</span>
       </button>
     </div>
   </div>

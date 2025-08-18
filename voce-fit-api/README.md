@@ -113,16 +113,16 @@ cd voce-fit-api
 ```sql
 -- Criar banco de dados
 CREATE DATABASE vocefit_db;
-CREATE USER auer WITH PASSWORD '123';
-GRANT ALL PRIVILEGES ON DATABASE vocefit_db TO auer;
+CREATE USER {USER} WITH PASSWORD {PASSWORD};
+GRANT ALL PRIVILEGES ON DATABASE vocefit_db TO {USER};
 ```
 
 3. **Configure as variáveis de ambiente**
 ```bash
 # application.properties já está configurado para:
 # spring.datasource.url=jdbc:postgresql://localhost:5432/vocefit_db
-# spring.datasource.username=auer
-# spring.datasource.password=123
+# spring.datasource.username={USER}
+# spring.datasource.password={PASSWORD}
 # server.port=8081
 ```
 
@@ -149,8 +149,8 @@ O sistema usa PostgreSQL com as seguintes configurações padrão:
 # application.properties
 spring.application.name=voce-fit
 spring.datasource.url=jdbc:postgresql://localhost:5432/vocefit_db
-spring.datasource.username=auer
-spring.datasource.password=123
+spring.datasource.username={USER}
+spring.datasource.password={PASSWORD}
 server.port=8081
 ```
 
@@ -323,7 +323,7 @@ mvn verify
 ### Estrutura de Testes
 ```
 src/test/java/
-└── com.auer.voce_fit/
+└── com.{PASSWORD}.voce_fit/
     └── VoceFitApplicationTests.java
 ```
 
@@ -348,7 +348,7 @@ Este projeto está sob a licença MIT. Veja o arquivo `LICENSE` para mais detalh
 
 ## 👥 Autor
 
-**Auer** - *Desenvolvedor Principal* - [GitHub](https://github.com/auer)
+**GOA03** - *Desenvolvedor Principal* - [GitHub](https://github.com/GOA03)
 
 ## 🙏 Agradecimentos
 - Spring Boot team pela excelente framework

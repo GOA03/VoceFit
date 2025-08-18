@@ -105,7 +105,7 @@ com.auer.voce_fit/
 
 1. **Clone o repositório**
 ```bash
-git clone https://github.com/seu-usuario/voce-fit-api.git
+git clone https://github.com/GOA03/VoceFit.git
 cd voce-fit-api
 ```
 
@@ -323,7 +323,7 @@ mvn verify
 ### Estrutura de Testes
 ```
 src/test/java/
-└── com.{PASSWORD}.voce_fit/
+└── com.auer.voce_fit/
     └── VoceFitApplicationTests.java
 ```
 

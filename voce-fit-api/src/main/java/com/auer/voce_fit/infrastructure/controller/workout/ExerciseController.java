@@ -1,4 +1,4 @@
-package com.auer.voce_fit.infrastructure.controller;
+package com.auer.voce_fit.infrastructure.controller.workout;
 
 import com.auer.voce_fit.application.services.ExerciseService;
 import com.auer.voce_fit.domain.dtos.ExerciseRequestDTO;

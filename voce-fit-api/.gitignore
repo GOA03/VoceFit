@@ -34,3 +34,7 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Variáveis de Ambiente ###
+*.key
+*.pub

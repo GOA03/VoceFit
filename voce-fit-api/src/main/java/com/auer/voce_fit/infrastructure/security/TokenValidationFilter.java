@@ -71,6 +71,9 @@ public class TokenValidationFilter extends OncePerRequestFilter {
 
                         // Define no contexto de segurança
                         SecurityContextHolder.getContext().setAuthentication(authentication);
+                    } else {
+                        // Usuário não encontrado - limpa o contexto
+                        SecurityContextHolder.clearContext();
                     }
                 }
             } catch (Exception e) {

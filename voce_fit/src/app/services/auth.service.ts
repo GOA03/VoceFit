@@ -22,15 +22,15 @@ export interface RegisterRequest {
 }
 
 export interface AuthResponse {
-  user: User;
-  token: string;
+  access_token: string;
+  refresh_token: string;
 }
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = 'http://localhost:8081/api/auth';
+  private apiUrl = 'http://localhost:8081/auth';
   private currentUserSubject = new BehaviorSubject<User | null>(null);
   private isAuthenticatedSubject = new BehaviorSubject<boolean>(false);
 
@@ -43,53 +43,38 @@ export class AuthService {
   }
 
   private checkStoredAuth(): void {
-    const storedUser = localStorage.getItem('vocefit_user');
-    const storedToken = localStorage.getItem('vocefit_token');
+    const storedAccessToken = localStorage.getItem('vocefit_access_token');
+    const storedRefreshToken = localStorage.getItem('vocefit_refresh_token');
 
-    if (storedUser && storedToken) {
+    if (storedAccessToken && storedRefreshToken) {
       try {
-        const user = JSON.parse(storedUser);
+        const user = this.decodeUserFromToken(storedAccessToken);
         this.currentUserSubject.next(user);
         this.isAuthenticatedSubject.next(true);
       } catch (error) {
-        // Se houver erro ao parsear, limpar o localStorage
+        // Se houver erro ao decodificar, limpar o localStorage
         this.clearStoredAuth();
       }
     }
   }
 
   private clearStoredAuth(): void {
-    localStorage.removeItem('vocefit_user');
-    localStorage.removeItem('vocefit_token');
+    localStorage.removeItem('vocefit_access_token');
+    localStorage.removeItem('vocefit_refresh_token');
   }
 
-  private setStoredAuth(user: User, token: string): void {
-    localStorage.setItem('vocefit_user', JSON.stringify(user));
-    localStorage.setItem('vocefit_token', token);
+  private setStoredAuth(accessToken: string, refreshToken: string): void {
+    localStorage.setItem('vocefit_access_token', accessToken);
+    localStorage.setItem('vocefit_refresh_token', refreshToken);
   }
 
   login(credentials: LoginRequest): Observable<AuthResponse> {
-    // Simulação de API - remover quando integrar com backend real
-    return this.simulateLogin(credentials).pipe(
-      map((response: AuthResponse) => {
-        this.currentUserSubject.next(response.user);
-        this.isAuthenticatedSubject.next(true);
-        this.setStoredAuth(response.user, response.token);
-        return response;
-      }),
-      catchError(error => {
-        console.error('Erro no login:', error);
-        return throwError(() => error);
-      })
-    );
-
-    // Implementação real da API (descomente quando o backend estiver pronto)
-    /*
     return this.http.post<AuthResponse>(`${this.apiUrl}/login`, credentials).pipe(
       map((response: AuthResponse) => {
-        this.currentUserSubject.next(response.user);
+        this.setStoredAuth(response.access_token, response.refresh_token);
+        const user = this.decodeUserFromToken(response.access_token);
+        this.currentUserSubject.next(user);
         this.isAuthenticatedSubject.next(true);
-        this.setStoredAuth(response.user, response.token);
         return response;
       }),
       catchError(error => {
@@ -97,34 +82,27 @@ export class AuthService {
         return throwError(() => error);
       })
     );
-    */
   }
 
   register(userData: RegisterRequest): Observable<AuthResponse> {
-    // Simulação de API - remover quando integrar com backend real
-    return this.simulateRegister(userData).pipe(
-      map((response: AuthResponse) => {
-        // Não fazer login automático após registro
+    // Mantém a implementação atual para registro (simulação ou futura integração)
+    return of(null).pipe(
+      delay(1000),
+      map(() => {
+        // Simulação simples - sempre sucesso
+        const user: User = {
+          id: Date.now().toString(),
+          name: userData.name,
+          email: userData.email,
+          createdAt: new Date().toISOString()
+        };
+        const response: AuthResponse = {
+          access_token: 'demo-access-token-' + Date.now(),
+          refresh_token: 'demo-refresh-token-' + Date.now()
+        };
         return response;
-      }),
-      catchError(error => {
-        console.error('Erro no registro:', error);
-        return throwError(() => error);
       })
     );
-
-    // Implementação real da API (descomente quando o backend estiver pronto)
-    /*
-    return this.http.post<AuthResponse>(`${this.apiUrl}/register`, userData).pipe(
-      map((response: AuthResponse) => {
-        return response;
-      }),
-      catchError(error => {
-        console.error('Erro no registro:', error);
-        return throwError(() => error);
-      })
-    );
-    */
   }
 
   logout(): void {
@@ -142,55 +120,22 @@ export class AuthService {
   }
 
   getToken(): string | null {
-    return localStorage.getItem('vocefit_token');
+    return localStorage.getItem('vocefit_access_token');
   }
 
-  // Métodos de simulação - remover quando integrar com backend real
-  private simulateLogin(credentials: LoginRequest): Observable<AuthResponse> {
-    return of(null).pipe(
-      delay(1000), // Simular delay da rede
-      map(() => {
-        // Validação simples para demonstração
-        if (credentials.email === 'demo@vocefit.com' && credentials.password === '123456') {
-          const user: User = {
-            id: '1',
-            name: 'Usuário Demo',
-            email: credentials.email,
-            createdAt: new Date().toISOString()
-          };
-          
-          const response: AuthResponse = {
-            user,
-            token: 'demo-jwt-token-' + Date.now()
-          };
-          
-          return response;
-        } else {
-          throw new Error('Credenciais inválidas');
-        }
-      })
-    );
-  }
+  private decodeUserFromToken(token: string): User {
+    // Decodifica o payload do JWT (parte do meio)
+    const payloadBase64 = token.split('.')[1];
+    const payloadJson = atob(payloadBase64);
+    const payload = JSON.parse(payloadJson);
 
-  private simulateRegister(userData: RegisterRequest): Observable<AuthResponse> {
-    return of(null).pipe(
-      delay(1000), // Simular delay da rede
-      map(() => {
-        // Simulação simples - sempre sucesso
-        const user: User = {
-          id: Date.now().toString(),
-          name: userData.name,
-          email: userData.email,
-          createdAt: new Date().toISOString()
-        };
-        
-        const response: AuthResponse = {
-          user,
-          token: 'demo-jwt-token-' + Date.now()
-        };
-        
-        return response;
-      })
-    );
+    // Extrai as informações do usuário do payload
+    const user: User = {
+      id: payload.userId || payload.sub || '',
+      name: payload.name || '',
+      email: payload.email || '',
+      createdAt: '' // Não disponível no token, pode ser ajustado conforme necessário
+    };
+    return user;
   }
 }

@@ -53,16 +53,16 @@ export class AuthComponent {
   passwordMatchValidator(form: FormGroup) {
     const password = form.get('password');
     const confirmPassword = form.get('confirmPassword');
-    
+
     if (password && confirmPassword && password.value !== confirmPassword.value) {
       confirmPassword.setErrors({ passwordMismatch: true });
       return { passwordMismatch: true };
     }
-    
+
     if (confirmPassword?.hasError('passwordMismatch')) {
       confirmPassword.setErrors(null);
     }
-    
+
     return null;
   }
 
@@ -82,7 +82,7 @@ export class AuthComponent {
 
   onSubmit() {
     const form = this.isLoginMode ? this.loginForm : this.registerForm;
-    
+
     if (form.invalid) {
       this.markFormGroupTouched(form);
       return;
@@ -99,7 +99,7 @@ export class AuthComponent {
       this.authService.login(loginData).subscribe({
         next: (response) => {
           this.isLoading = false;
-          this.alertService.success(`Bem-vindo, ${response.user.name}!`);
+          this.alertService.success(`Bem-vindo, ${this.authService.getCurrentUser()?.name || 'Usuário'}!`);
           this.router.navigate(['/']);
         },
         error: (error) => {
@@ -139,24 +139,24 @@ export class AuthComponent {
   getErrorMessage(fieldName: string): string {
     const form = this.isLoginMode ? this.loginForm : this.registerForm;
     const field = form.get(fieldName);
-    
+
     if (field?.hasError('required')) {
       return `${this.getFieldLabel(fieldName)} é obrigatório`;
     }
-    
+
     if (field?.hasError('email')) {
       return 'Email inválido';
     }
-    
+
     if (field?.hasError('minlength')) {
       const minLength = field.errors?.['minlength'].requiredLength;
       return `${this.getFieldLabel(fieldName)} deve ter pelo menos ${minLength} caracteres`;
     }
-    
+
     if (field?.hasError('passwordMismatch')) {
       return 'As senhas não coincidem';
     }
-    
+
     return '';
   }
 

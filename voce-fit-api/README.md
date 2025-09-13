@@ -1,47 +1,3 @@
-# 🏋️‍♂️ VocêFit API
-
-Uma API RESTful moderna e robusta para gerenciamento de treinos e exercícios físicos, desenvolvida com Spring Boot e arquitetura limpa.
-
-## 📋 Índice
-
-- [Visão Geral](#visão-geral)
-- [Tecnologias](#tecnologias)
-- [Arquitetura](#arquitetura)
-- [Funcionalidades](#funcionalidades)
-- [Instalação](#instalação)
-- [Configuração](#configuração)
-- [Uso](#uso)
-- [Documentação da API](#documentação-da-api)
-- [Banco de Dados](#banco-de-dados)
-- [Testes](#testes)
-- [Contribuição](#contribuição)
-- [Licença](#licença)
-
-## 🎯 Visão Geral
-
-O VoceFit API é uma solução completa para gerenciamento de treinos e exercícios, permitindo que usuários criem, organizem e reordenen seus treinos de forma eficiente. O sistema foi projetado seguindo os princípios de Clean Architecture e Domain-Driven Design (DDD), garantindo escalabilidade e manutenibilidade.
-
-### Principais Características:
-- ✅ CRUD completo para treinos (Workouts) e exercícios (Exercises)
-- ✅ Reordenação inteligente de exercícios com transações atômicas
-- ✅ Duplicação de treinos com todos os exercícios
-- ✅ Validações robustas com mensagens de erro claras
-- ✅ API RESTful com padrões REST
-- ✅ Documentação clara e exemplos práticos
-
-## 🚀 Tecnologias
-
-| Tecnologia | Versão | Descrição |
-|------------|--------|-----------|
-| **Java** | 21 | Linguagem principal |
-| **Spring Boot** | 3.5.4 | Framework principal |
-| **Spring Data JPA** | Latest | Persistência de dados |
-| **PostgreSQL** | 15+ | Banco de dados relacional |
-| **Lombok** | Latest | Redução de boilerplate |
-| **Maven** | Latest | Gerenciamento de dependências |
-| **Hibernate** | Latest | ORM e mapeamento objeto-relacional |
-| **Validation** | Latest | Validações de entrada |
-
 ## 🏗️ Arquitetura
 
 O projeto segue uma arquitetura em camadas limpa, separando responsabilidades de forma clara:
@@ -58,7 +14,10 @@ com.auer.voce_fit/
 ├── infrastructure/     # Camada de Infraestrutura
 │   ├── config/         # Configurações
 │   ├── controller/     # Controllers REST
-│   └── persistence/    # Implementações JPA
+│   │   ├── user/       # Controllers de usuário
+│   │   └── workout/    # Controllers de treino
+│   ├── persistence/    # Implementações JPA
+│   └── security/       # Configurações de segurança
 └── usecases/          # Casos de Uso (Clean Architecture)
     ├── exercise/
     └── workout/
@@ -230,6 +189,11 @@ curl -X POST http://localhost:8081/api/workouts/550e8400-e29b-41d4-a716-44665544
 
 | Método | Endpoint | Descrição |
 |--------|----------|-----------|
+| **Autenticação** |
+| POST | `/auth/login` | Login do usuário |
+| POST | `/auth/refresh` | Atualizar token de acesso |
+| **Usuários** |
+| POST | `/auth/users` | Registrar novo usuário |
 | **Workouts** |
 | GET | `/api/workouts` | Listar todos treinos |
 | GET | `/api/workouts/{id}` | Buscar treino específico |

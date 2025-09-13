@@ -25,7 +25,7 @@ public class WorkoutService {
 
     private final WorkoutUseCase workoutUseCase;
 
-    // Método auxiliar para validar propriedade do workout
+    // Função auxiliar para validar propriedade do workout
     private void validateWorkoutOwnership(Workout workout, User user) throws Throwable {
         if (!workout.getUser().getId().equals(user.getId())) throw new Throwable("Access denied!");
     }

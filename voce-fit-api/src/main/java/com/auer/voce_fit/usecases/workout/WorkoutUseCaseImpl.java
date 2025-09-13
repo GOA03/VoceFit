@@ -134,7 +134,16 @@ public class WorkoutUseCaseImpl implements WorkoutUseCase {
 
     @Override
     public List<WorkoutResponseDTO> getWorkoutsByUser(UUID id) {
-        return List.of();
+        List<Workout> workouts = workoutRepository.findByUserId(id);
+        return workouts.stream()
+                .map(workout -> new WorkoutResponseDTO(
+                        workout.getId(),
+                        workout.getTitle(),
+                        workout.getExercises() != null ? workout.getExercises().size() : 0,
+                        workout.getCreatedAt(),
+                        workout.getUpdatedAt()
+                ))
+                .toList();
     }
 
     private void validateExercisesBelongToWorkout(UUID workoutId, List<ReorderRequestDTO> requests) {

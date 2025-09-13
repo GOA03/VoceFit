@@ -28,7 +28,7 @@ public class WorkoutController {
 
     private final WorkoutService workoutService;
 
-    // Método auxiliar para obter usuário autenticado
+    // Função auxiliar para obter usuário autenticado
     private User getAuthenticatedUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && authentication.getPrincipal() instanceof User) {
@@ -56,8 +56,9 @@ public class WorkoutController {
         return ResponseEntity.status(HttpStatus.CREATED).body(duplicatedWorkout);
     }
 
+    // Retorna todos os treinos do usuário autenticado pelo token JWT
     @GetMapping
-    public ResponseEntity<List<WorkoutResponseDTO>> findAll() {
+    public ResponseEntity<List<WorkoutResponseDTO>> findAllByUser() {
         User user = getAuthenticatedUser();
         List<WorkoutResponseDTO> workouts = workoutService.getAllWorkouts(user);
         return ResponseEntity.ok(workouts);

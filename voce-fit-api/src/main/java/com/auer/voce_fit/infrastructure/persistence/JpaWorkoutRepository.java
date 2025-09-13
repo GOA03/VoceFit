@@ -1,11 +1,15 @@
 package com.auer.voce_fit.infrastructure.persistence;
 
+import com.auer.voce_fit.domain.dtos.WorkoutResponseDTO;
 import com.auer.voce_fit.domain.entities.Workout;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.UUID;
 
 @Repository
 public interface JpaWorkoutRepository extends JpaRepository<Workout, UUID> {
+
+    List<Workout> findByUserId(UUID userId);
 }

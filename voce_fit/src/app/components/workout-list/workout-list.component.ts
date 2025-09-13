@@ -1,5 +1,6 @@
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { LucideAngularModule, Dumbbell } from 'lucide-angular';
 import { WorkoutCardComponent } from '../workout-card/workout-card.component';
 import { WorkoutService } from '../../services/workout.service';
 import { Workout } from '../../models/workout.model';
@@ -15,7 +16,7 @@ interface WorkoutCardData {
 @Component({
   selector: 'app-workout-list',
   standalone: true,
-  imports: [CommonModule, WorkoutCardComponent],
+  imports: [CommonModule, LucideAngularModule, WorkoutCardComponent],
   templateUrl: './workout-list.component.html',
   styleUrls: ['./workout-list.component.scss']
 })
@@ -23,6 +24,8 @@ export class WorkoutListComponent implements OnInit {
   @Output() editWorkout = new EventEmitter<Workout>();
   @Output() deleteWorkout = new EventEmitter<string>();
   @Output() duplicateWorkout = new EventEmitter<Workout>();
+  @Output() addWorkout = new EventEmitter<void>();
+  readonly DumbbellIcon = Dumbbell;
   workouts: WorkoutCardData[] = [];
   loading = true;
   error: string | null = null;

@@ -11,7 +11,7 @@
 
   <ul *ngIf="!loading && !error">
     <li *ngFor="let workout of workouts" class="workout-item">
-      <app-workout-card 
+      <app-workout-card
         [workout]="workout"
         (edit)="onEditWorkout($event)"
         (delete)="onDeleteWorkout($event)"
@@ -21,6 +21,9 @@
   </ul>
 
   <div *ngIf="!loading && !error && workouts.length === 0" class="empty">
-    <p>Nenhum treino encontrado.</p>
+    <lucide-icon [img]="DumbbellIcon" class="empty-icon"></lucide-icon>
+    <h3 class="empty-title">Comece sua jornada fitness!</h3>
+    <p class="empty-description">Você ainda não tem nenhum treino cadastrado. Crie seu primeiro treino e comece a alcançar seus objetivos.</p>
+    <button class="empty-button" (click)="addWorkout.emit()">Criar Primeiro Treino</button>
   </div>
 </div>

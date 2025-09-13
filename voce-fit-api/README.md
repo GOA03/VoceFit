@@ -1,4 +1,4 @@
-# 🏋️‍♂️ VoceFit API
+# 🏋️‍♂️ VocêFit API
 
 Uma API RESTful moderna e robusta para gerenciamento de treinos e exercícios físicos, desenvolvida com Spring Boot e arquitetura limpa.
 

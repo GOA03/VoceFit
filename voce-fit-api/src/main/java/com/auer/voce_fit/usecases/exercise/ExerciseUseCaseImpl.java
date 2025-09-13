@@ -30,13 +30,6 @@ public class ExerciseUseCaseImpl implements ExerciseUseCase {
         return exerciseRepository.findAll();
     }
 
-    /*
-    @Override
-    public List<Exercise> getExercisesByWorkoutId(UUID id) {
-        return exerciseRepository.findByWorkoutId(id);
-    }
-    */
-
     @Override
     @Transactional
     public void createExercise(Exercise exercise) {

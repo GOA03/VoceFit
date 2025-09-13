@@ -34,6 +34,10 @@ public class Workout {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
     @OneToMany(mappedBy = "workout", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     @OrderBy("sequence ASC")

@@ -5,47 +5,46 @@ import com.auer.voce_fit.domain.dtos.ExerciseResponseDTO;
 import com.auer.voce_fit.domain.dtos.ReorderRequestDTO;
 import com.auer.voce_fit.domain.dtos.WorkoutResponseDTO;
 import com.auer.voce_fit.domain.entities.Exercise;
+import com.auer.voce_fit.domain.entities.User;
 import com.auer.voce_fit.domain.entities.Workout;
 import com.auer.voce_fit.domain.exceptions.InvalidExerciseOrderException;
 import com.auer.voce_fit.domain.exceptions.WorkoutNotFoundException;
 import com.auer.voce_fit.usecases.workout.WorkoutUseCase;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class WorkoutService {
 
     private final WorkoutUseCase workoutUseCase;
 
-    public WorkoutService(WorkoutUseCase workoutUseCase) {
-        this.workoutUseCase = workoutUseCase;
+    // Método auxiliar para validar propriedade do workout
+    private void validateWorkoutOwnership(Workout workout, User user) throws Throwable {
+        if (!workout.getUser().getId().equals(user.getId())) throw new Throwable("Access denied!");
     }
 
-    // Buscar todos os workouts
-    public List<WorkoutResponseDTO> getAllWorkouts() {
-
-        return workoutUseCase.getWorkouts().stream()
-                .map(workout -> new WorkoutResponseDTO(
-                        workout.getId(),
-                        workout.getTitle(),
-                        workout.getExercises() != null ? workout.getExercises().size() : 0,
-                        workout.getCreatedAt(),
-                        workout.getUpdatedAt()
-                ))
-                .toList();
+    @Transactional(readOnly = true)
+    public List<WorkoutResponseDTO> getAllWorkouts(User user) {
+        return workoutUseCase.getWorkoutsByUser(user.getId());
     }
 
-    // Buscar workout por ID
-    public ExerciseByWorkoutResponseDTO getWorkout(UUID workoutId) {
+    @Transactional(readOnly = true)
+    public ExerciseByWorkoutResponseDTO getWorkout(UUID workoutId, User user) throws Throwable {
         Workout workout = workoutUseCase.getWorkout(workoutId)
                 .orElseThrow(() -> new WorkoutNotFoundException("Workout não encontrado: " + workoutId));
 
-        List<ExerciseResponseDTO> exercises = workoutUseCase.getExercisesByWorkout(workoutId)
+        validateWorkoutOwnership(workout, user);
+
+        List<ExerciseResponseDTO> exercises = workout.getExercises()
                 .stream()
+                .sorted(Comparator.comparing(Exercise::getSequence))
                 .map(this::mapToExerciseResponseDTO)
                 .toList();
 
@@ -57,31 +56,70 @@ public class WorkoutService {
         );
     }
 
-    // Criar novo workout
     @Transactional
-    public WorkoutResponseDTO createWorkout(String title) {
-        Workout workout = Workout.builder()
+    public WorkoutResponseDTO createWorkout(String title, User user) {
+        Optional<Workout> workout = Optional.ofNullable(Workout.builder()
                 .title(title)
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
-                .build();
+                .user(user)
+                .build()); // CreatedAt e UpdatedAt podem ser gerenciados por @CreatedDate/@LastModifiedDate
 
-        workoutUseCase.createWorkout(workout);
+        workout = workoutUseCase.createWorkout(workout.orElse(null));
 
-        return new WorkoutResponseDTO(
-                workout.getId(),
-                workout.getTitle(),
-                0,
-                workout.getCreatedAt(),
-                workout.getUpdatedAt()
-        );
+        assert workout.orElse(null) != null;
+        return mapToWorkoutResponseDTO(workout.orElse(null));
     }
 
-    // Atualizar workout
     @Transactional
-    public WorkoutResponseDTO updateWorkout(UUID workoutId, String title) {
+    public WorkoutResponseDTO updateWorkout(UUID workoutId, String title, User user) throws Throwable {
+        Workout existingWorkout = workoutUseCase.getWorkout(workoutId)
+                .orElseThrow(() -> new WorkoutNotFoundException("Workout não encontrado: " + workoutId));
+
+        validateWorkoutOwnership(existingWorkout, user);
+
         Workout workout = workoutUseCase.updateWorkout(workoutId, title);
 
+        return mapToWorkoutResponseDTO(workout);
+    }
+
+    @Transactional
+    public void deleteWorkout(UUID workoutId, User user) throws Throwable {
+        Workout workout = workoutUseCase.getWorkout(workoutId)
+                .orElseThrow(() -> new WorkoutNotFoundException("Workout não encontrado: " + workoutId));
+
+        validateWorkoutOwnership(workout, user);
+
+        workoutUseCase.deleteWorkout(workoutId);
+    }
+
+    @Transactional
+    public WorkoutResponseDTO duplicateWorkout(UUID workoutId, User user) throws Throwable {
+        Workout originalWorkout = workoutUseCase.getWorkout(workoutId)
+                .orElseThrow(() -> new WorkoutNotFoundException("Workout não encontrado: " + workoutId));
+
+        validateWorkoutOwnership(originalWorkout, user);
+
+        Workout duplicated = workoutUseCase.duplicateWorkout(workoutId);
+
+        return mapToWorkoutResponseDTO(duplicated);
+    }
+
+    @Transactional
+    public ExerciseByWorkoutResponseDTO reorderExercises(UUID workoutId, List<ReorderRequestDTO> reorderRequests, User user) throws Throwable {
+        if (reorderRequests == null || reorderRequests.isEmpty()) {
+            throw new InvalidExerciseOrderException("Lista de reordenação não pode estar vazia");
+        }
+
+        Workout workout = workoutUseCase.getWorkout(workoutId)
+                .orElseThrow(() -> new WorkoutNotFoundException("Workout não encontrado: " + workoutId));
+
+        validateWorkoutOwnership(workout, user);
+
+        workoutUseCase.reorderExercises(workoutId, reorderRequests);
+        return getWorkout(workoutId, user);
+    }
+
+    // Métodos de mapeamento centralizados
+    private WorkoutResponseDTO mapToWorkoutResponseDTO(Workout workout) {
         return new WorkoutResponseDTO(
                 workout.getId(),
                 workout.getTitle(),
@@ -91,42 +129,6 @@ public class WorkoutService {
         );
     }
 
-    // Deletar workout
-    @Transactional
-    public void deleteWorkout(UUID workoutId) {
-        workoutUseCase.deleteWorkout(workoutId);
-    }
-
-    // Duplicar workout
-    @Transactional
-    public WorkoutResponseDTO duplicateWorkout(UUID workoutId) {
-        Workout workoutDuplicated = workoutUseCase.duplicateWorkout(workoutId);
-
-        return new WorkoutResponseDTO(
-                workoutDuplicated.getId(),
-                workoutDuplicated.getTitle(),
-                workoutDuplicated.getExercises() != null ? workoutDuplicated.getExercises().size() : 0,
-                workoutDuplicated.getCreatedAt(),
-                workoutDuplicated.getUpdatedAt()
-        );
-    }
-
-    // === OPERAÇÕES DE EXERCÍCIOS ===
-
-    // Reordenar exercícios em lote
-    @Transactional
-    public ExerciseByWorkoutResponseDTO reorderExercises(UUID workoutId, List<ReorderRequestDTO> reorderRequests) {
-        if (reorderRequests == null || reorderRequests.isEmpty()) {
-            throw new InvalidExerciseOrderException("Lista de reordenação não pode estar vazia");
-        }
-
-        workoutUseCase.reorderExercises(workoutId, reorderRequests);
-        return getWorkout(workoutId);
-    }
-
-    // === MÉTODOS AUXILIARES ===
-
-    // Mapear entidade para DTO
     private ExerciseResponseDTO mapToExerciseResponseDTO(Exercise exercise) {
         return new ExerciseResponseDTO(
                 exercise.getId(),

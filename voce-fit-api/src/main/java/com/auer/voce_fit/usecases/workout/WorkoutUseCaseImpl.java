@@ -1,6 +1,7 @@
 package com.auer.voce_fit.usecases.workout;
 
 import com.auer.voce_fit.domain.dtos.ReorderRequestDTO;
+import com.auer.voce_fit.domain.dtos.WorkoutResponseDTO;
 import com.auer.voce_fit.domain.entities.Exercise;
 import com.auer.voce_fit.domain.entities.Workout;
 import com.auer.voce_fit.domain.exceptions.ExerciseNotFoundException;
@@ -41,9 +42,9 @@ public class WorkoutUseCaseImpl implements WorkoutUseCase {
 
     @Override
     @Transactional // Abre transação, garante commit/rollback
-    public void createWorkout(Workout workout) {
-        // Objeto novo → precisa salvar para inserir no banco
+    public Optional<Workout> createWorkout(Workout workout) {
         workoutRepository.save(workout);
+        return Optional.of(workout);
     }
 
     @Override
@@ -129,6 +130,11 @@ public class WorkoutUseCaseImpl implements WorkoutUseCase {
         // 4. Retornar workout atualizado
         return workoutRepository.findById(workoutId)
                 .orElseThrow(() -> new WorkoutNotFoundException("Workout não encontrado: " + workoutId));
+    }
+
+    @Override
+    public List<WorkoutResponseDTO> getWorkoutsByUser(UUID id) {
+        return List.of();
     }
 
     private void validateExercisesBelongToWorkout(UUID workoutId, List<ReorderRequestDTO> requests) {

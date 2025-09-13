@@ -5,82 +5,93 @@ import com.auer.voce_fit.domain.dtos.ExerciseByWorkoutResponseDTO;
 import com.auer.voce_fit.domain.dtos.ReorderRequestDTO;
 import com.auer.voce_fit.domain.dtos.WorkoutRequestDTO;
 import com.auer.voce_fit.domain.dtos.WorkoutResponseDTO;
-import com.auer.voce_fit.domain.exceptions.InvalidExerciseOrderException;
-import com.auer.voce_fit.domain.exceptions.WorkoutNotFoundException;
+import com.auer.voce_fit.domain.entities.User;
+import com.auer.voce_fit.domain.exceptions.UnauthorizedException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.List;
 import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/workouts")
+@RequiredArgsConstructor // Lombok para constructor injection
 public class WorkoutController {
 
     private final WorkoutService workoutService;
 
-    public WorkoutController(WorkoutService workoutService) {
-        this.workoutService = workoutService;
+    // Método auxiliar para obter usuário autenticado
+    private User getAuthenticatedUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.getPrincipal() instanceof User) {
+            return (User) authentication.getPrincipal();
+        }
+        throw new UnauthorizedException("User not authorized!");
     }
 
     @PostMapping
-    public ResponseEntity<WorkoutResponseDTO> createWorkout (@RequestBody WorkoutRequestDTO request) {
-        try {
-            WorkoutResponseDTO workout = workoutService.createWorkout(request.title());
-            return ResponseEntity.status(201).body(workout);
-        } catch (RuntimeException e) {
-            throw new RuntimeException(e);
-        }
+    public ResponseEntity<WorkoutResponseDTO> createWorkout(@Valid @RequestBody WorkoutRequestDTO request) {
+        User user = getAuthenticatedUser();
+        WorkoutResponseDTO workout = workoutService.createWorkout(request.title(), user);
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(workout.id())
+                .toUri();
+        return ResponseEntity.created(location).body(workout);
     }
 
     @PostMapping("/{workoutId}/duplicate")
-    public ResponseEntity<WorkoutResponseDTO> duplicateWorkout (@PathVariable UUID workoutId) {
-        WorkoutResponseDTO duplicatedWorkout = workoutService.duplicateWorkout(workoutId);
-        return ResponseEntity.status(201).body(duplicatedWorkout);
+    public ResponseEntity<WorkoutResponseDTO> duplicateWorkout(@PathVariable UUID workoutId) throws Throwable {
+        User user = getAuthenticatedUser();
+        WorkoutResponseDTO duplicatedWorkout = workoutService.duplicateWorkout(workoutId, user);
+        return ResponseEntity.status(HttpStatus.CREATED).body(duplicatedWorkout);
     }
 
     @GetMapping
     public ResponseEntity<List<WorkoutResponseDTO>> findAll() {
-        List<WorkoutResponseDTO> workouts = workoutService.getAllWorkouts();
+        User user = getAuthenticatedUser();
+        List<WorkoutResponseDTO> workouts = workoutService.getAllWorkouts(user);
         return ResponseEntity.ok(workouts);
     }
 
-    @GetMapping("{id}")
-    public ResponseEntity<ExerciseByWorkoutResponseDTO> findWorkout(@PathVariable UUID id) {
-        ExerciseByWorkoutResponseDTO workouts = workoutService.getWorkout(id);
-        return ResponseEntity.ok(workouts);
+    @GetMapping("/{id}")
+    public ResponseEntity<ExerciseByWorkoutResponseDTO> findWorkout(@PathVariable UUID id) throws Throwable {
+        User user = getAuthenticatedUser();
+        ExerciseByWorkoutResponseDTO workout = workoutService.getWorkout(id, user);
+        return ResponseEntity.ok(workout);
     }
 
-    @PutMapping("{id}")
-    public ResponseEntity<WorkoutResponseDTO> updateWorkout(@PathVariable UUID id,  @RequestBody WorkoutRequestDTO request) {
-        try {
-            WorkoutResponseDTO workout = workoutService.updateWorkout(id, request.title());
-            return ResponseEntity.ok(workout);
-        } catch (RuntimeException e) {
-            throw new RuntimeException(e);
-        }
+    @PutMapping("/{id}")
+    public ResponseEntity<WorkoutResponseDTO> updateWorkout(
+            @PathVariable UUID id,
+            @Valid @RequestBody WorkoutRequestDTO request) throws Throwable {
+        User user = getAuthenticatedUser();
+        WorkoutResponseDTO workout = workoutService.updateWorkout(id, request.title(), user);
+        return ResponseEntity.ok(workout);
     }
 
     @PutMapping("/{workoutId}/exercises/order")
     public ResponseEntity<ExerciseByWorkoutResponseDTO> reorderExercises(
             @PathVariable UUID workoutId,
-            @RequestBody @Valid @NotEmpty List<ReorderRequestDTO> reorderRequests) {
-
-        try {
-            ExerciseByWorkoutResponseDTO updatedWorkout = workoutService.reorderExercises(workoutId, reorderRequests);
-            return ResponseEntity.ok(updatedWorkout);
-        } catch (WorkoutNotFoundException e) {
-            return ResponseEntity.notFound().build();
-        } catch (InvalidExerciseOrderException e) {
-            return ResponseEntity.badRequest().build();
-        }
+            @RequestBody @Valid @NotEmpty List<ReorderRequestDTO> reorderRequests) throws Throwable {
+        User user = getAuthenticatedUser();
+        ExerciseByWorkoutResponseDTO updatedWorkout = workoutService.reorderExercises(workoutId, reorderRequests, user);
+        return ResponseEntity.ok(updatedWorkout);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteWorkout(@PathVariable UUID id) {
-        workoutService.deleteWorkout(id);
-        return ResponseEntity.noContent().build(); // HTTP 204 No Content
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteWorkout(@PathVariable UUID id) throws Throwable {
+        User user = getAuthenticatedUser();
+        workoutService.deleteWorkout(id, user);
     }
 }

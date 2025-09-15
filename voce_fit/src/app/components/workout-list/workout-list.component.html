@@ -21,7 +21,7 @@
   </ul>
 
   <div *ngIf="!loading && !error && workouts.length === 0" class="empty">
-    <lucide-icon [img]="DumbbellIcon" class="empty-icon"></lucide-icon>
+    <lucide-icon [img]="DumbbellIcon" class="empty-icon" size="70rem"></lucide-icon>
     <h3 class="empty-title">Comece sua jornada fitness!</h3>
     <p class="empty-description">Você ainda não tem nenhum treino cadastrado. Crie seu primeiro treino e comece a alcançar seus objetivos.</p>
     <button class="empty-button" (click)="addWorkout.emit()">Criar Primeiro Treino</button>

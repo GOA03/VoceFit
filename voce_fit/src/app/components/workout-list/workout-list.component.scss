@@ -118,20 +118,17 @@ $spinner-color: #60A5FA;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    background-color: $surface-dark;
     border-radius: 16px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    padding: 64px 32px;
-    margin: 32px auto;
+    padding: 32px 16px;
+    margin: 6px auto;
     max-width: 400px;
     text-align: center;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
     color: $text-secondary;
 
     .empty-icon {
-      width: 64px;
-      height: 64px;
-      margin-bottom: 24px;
+      width: 4.5rem;
+      height: 4.5rem;
+      margin-bottom: 10px;
       color: $primary-color;
       stroke-width: 1.5;
     }
@@ -139,14 +136,15 @@ $spinner-color: #60A5FA;
     .empty-title {
       font-size: 24px;
       font-weight: 700;
-      margin-bottom: 12px;
+      margin-bottom: 0px;
+      margin-top: 10px;
       color: $text-primary;
     }
 
     .empty-description {
       font-size: 16px;
       color: $text-secondary;
-      margin-bottom: 24px;
+      padding-bottom: 10px;
       line-height: 1.5;
     }
 

@@ -84,23 +84,11 @@ export class AuthService {
     );
   }
 
-  register(userData: RegisterRequest): Observable<AuthResponse> {
-    // Mantém a implementação atual para registro (simulação ou futura integração)
-    return of(null).pipe(
-      delay(1000),
-      map(() => {
-        // Simulação simples - sempre sucesso
-        const user: User = {
-          id: Date.now().toString(),
-          name: userData.name,
-          email: userData.email,
-          createdAt: new Date().toISOString()
-        };
-        const response: AuthResponse = {
-          access_token: 'demo-access-token-' + Date.now(),
-          refresh_token: 'demo-refresh-token-' + Date.now()
-        };
-        return response;
+  register(userData: RegisterRequest): Observable<any> {
+    return this.http.post(`${this.apiUrl}/users`, userData).pipe(
+      catchError(error => {
+        console.error('Erro no registro:', error);
+        return throwError(() => error);
       })
     );
   }

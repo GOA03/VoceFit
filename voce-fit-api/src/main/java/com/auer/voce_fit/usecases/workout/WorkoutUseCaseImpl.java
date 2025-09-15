@@ -79,6 +79,7 @@ public class WorkoutUseCaseImpl implements WorkoutUseCase {
             .title(originalWorkout.getTitle() + " (Copia)")
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
+                .user(originalWorkout.getUser())
                 .build();
 
         if (originalWorkout.getExercises() != null) {

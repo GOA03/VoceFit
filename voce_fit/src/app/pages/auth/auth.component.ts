@@ -104,7 +104,7 @@ export class AuthComponent {
         },
         error: (error) => {
           this.isLoading = false;
-          this.alertService.error('Credenciais inválidas. Tente: demo@vocefit.com / 123456');
+          this.alertService.error('Credenciais inválidas!');
         }
       });
     } else {

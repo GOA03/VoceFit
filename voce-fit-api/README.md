@@ -4,8 +4,8 @@ O projeto segue uma arquitetura em camadas limpa, separando responsabilidades de
 
 ```
 com.auer.voce_fit/
-├── domain/              # Camada de Domínio (Core Business)
-│   ├── entities/        # Entidades JPA
+├── domain/             # Camada de Domínio (Core Business)
+│   ├── entities/       # Entidades JPA
 │   ├── dtos/           # Data Transfer Objects
 │   ├── exceptions/     # Exceções customizadas
 │   └── repositories/   # Interfaces de repositório
@@ -18,7 +18,7 @@ com.auer.voce_fit/
 │   │   └── workout/    # Controllers de treino
 │   ├── persistence/    # Implementações JPA
 │   └── security/       # Configurações de segurança
-└── usecases/          # Casos de Uso (Clean Architecture)
+└── usecases/           # Casos de Uso (Clean Architecture)
     ├── exercise/
     └── workout/
 ```
